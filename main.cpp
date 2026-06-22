@@ -4,11 +4,12 @@
 #include <string.h>
 // win api
 #include <windows.h>
+#include <wincodec.h>
 // directx
 #include <d2d1.h>
 #include <d2d1helper.h>
 // incl
-#include <ImgManager.h>
+#include <ImgManager.hpp>
 
 // Window Procedure : CALLBACK Function = Process Messages From OS
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -46,19 +47,17 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 }
 
-
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow){
-    const char CLASS_NAME[] = "ChessGameEngine";
-    WNDCLASS wc = {0};
+    const wchar_t CLASS_NAME[] = L"CINEMAHOLIC";
+    WNDCLASSW wc = {0};
     wc.lpfnWndProc = WindowProc;
     wc.hInstance = hInstance;
     wc.lpszClassName = CLASS_NAME;
-    RegisterClass(&wc);
-    HWND hwnd = CreateWindowEx(
+    RegisterClassW(&wc);
+    HWND hwnd = CreateWindowExW(
         0,
         CLASS_NAME,
-        "CINEMA HOLIC",
+        L"CINEMA HOLIC",
         WS_OVERLAPPEDWINDOW,
         CW_USEDEFAULT, CW_USEDEFAULT,
         1280, 720,
@@ -74,11 +73,20 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
 
     ShowWindow(hwnd, nCmdShow);
 
+    // Initialize Component Object Model
+    CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+    GetResourceDir();
+    CustomLoadImage(L"title.png");
+
     MSG msg = {0};
 
     while(GetMessage(&msg, NULL, 0, 0)) {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
+
+    // If press "x" btn, exit window.
+    // Uninitialize Component Object Model
+    CoUninitialize();
     return 0;
 }
