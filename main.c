@@ -74,6 +74,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
 
     ShowWindow(hwnd, nCmdShow);
 
+    GetResourceDir();
+    CustomLoadResource("title.png");
+
     MSG msg = {0};
 
     while(GetMessage(&msg, NULL, 0, 0)) {

@@ -12,3 +12,4 @@ development
 - 윈도우 시스템: WinAPI
 - 그래픽스 API: DirectX 11
 - 플랫폼: Windows
+- 외부 라이브러리 사용: stb (이미지 로드)
