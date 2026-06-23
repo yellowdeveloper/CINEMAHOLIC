@@ -10,6 +10,15 @@
 // incl
 #include "ImgManager.hpp"
 
+// 0: loading
+// 1: title
+// 2: game - tycoon
+// 3: game - visual novel
+// 4: game - minigame
+// 5: game - ending
+// 6: shut down
+int game_state = 0;
+
 // Window Procedure : CALLBACK Function = Process Messages From OS
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch(uMsg) {
@@ -46,8 +55,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
 }
 
-
-
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine, int nCmdShow){
     const char CLASS_NAME[] = "CINEMAHOLIC";
     WNDCLASS wc = {0};
@@ -72,61 +79,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
         return 0;
     }
 
+    GetResourceDir();
+    RECT rc;
+    GetClientRect(hwnd, &rc);
+    D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
+    D2DFactoryInit(hwnd, size);
+
     ShowWindow(hwnd, nCmdShow);
+
+    // Show Production Logo And Change State to title
+    RenderProduction();
+    game_state++;
 
     // TODO: Run Game Logic Thread
     // TODO: Run Asset Pre-Loadder Thread
-    // Under this cite will be in the Asset Pre-Loader
-    GetResourceDir();
-    CustomLoadResource((unsigned char*)"title.png");
-
-    ID2D1Factory* D2DFactory = nullptr;
-    ID2D1HwndRenderTarget* renderTarget = nullptr;
-
-    D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &D2DFactory);
-
-    RECT rc;
-    GetClientRect(hwnd, &rc);
-
-    D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
-
-    D2DFactory->CreateHwndRenderTarget(
-        D2D1::RenderTargetProperties(),
-        D2D1::HwndRenderTargetProperties(hwnd, size),
-        &renderTarget
-    );
-
-    ID2D1Bitmap* bitmap = nullptr;
-
-    D2D1_BITMAP_PROPERTIES props =
-        D2D1::BitmapProperties(
-            D2D1::PixelFormat(
-                DXGI_FORMAT_R8G8B8A8_UNORM,
-                D2D1_ALPHA_MODE_PREMULTIPLIED
-            )
-        );
-
-    HRESULT hr = renderTarget->CreateBitmap(
-        D2D1::SizeU(1280, 720),
-        preloaded,
-        1280 * 4,
-        &props,
-        &bitmap
-    );
-
-    renderTarget->BeginDraw();
-
-    renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-
-    if (bitmap) {
-        renderTarget->DrawBitmap(bitmap);
-    }
-
-    renderTarget->EndDraw();
 
     MSG msg = {0};
 
     while(GetMessage(&msg, NULL, 0, 0)) {
+        if (game_state == 1) {
+            if (currentScene == nullptr) {
+                LoadScene((unsigned char*)"title.png");
+                CacheScene();
+            }
+            D2DSceneDraw(1.0f);
+        }
         // Main Thread Will Process Window, Image Render
         TranslateMessage(&msg);
         DispatchMessage(&msg);
