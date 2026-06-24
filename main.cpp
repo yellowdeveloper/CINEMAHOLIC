@@ -88,22 +88,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     ShowWindow(hwnd, nCmdShow);
 
     // Show Production Logo And Change State to title
-    RenderProduction();
-    game_state++;
 
     // TODO: Run Game Logic Thread
     // TODO: Run Asset Pre-Loadder Thread
 
-    MSG msg = {0};
+    MSG msg = {0};    
 
     while(GetMessage(&msg, NULL, 0, 0)) {
-        if (game_state == 1) {
-            if (currentScene == nullptr) {
-                LoadScene((unsigned char*)"title.png");
-                CacheScene();
-            }
-            D2DSceneDraw(1.0f);
-        }
+        LoadTitle(&game_state);
+        RenderComponent();
         // Main Thread Will Process Window, Image Render
         TranslateMessage(&msg);
         DispatchMessage(&msg);
