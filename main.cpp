@@ -7,6 +7,8 @@
 // directx
 #include <d2d1.h>
 #include <d2d1helper.h>
+// C++ lib
+#include <thread>
 // incl
 #include "structs.h"
 #include "ImgManager.hpp"
@@ -20,6 +22,9 @@
 // 6: shut down
 int game_state = 0;
 
+// 이미지 렌더링 :: 더블 버퍼
+// 로직 스레드 > 렌더 스냅샷 write
+// 렌더 타임에 buffer swap > 렌더링 진행
 RenderData RenderBuff_A[MAX_RENDER_NUM];
 RenderData RenderBuff_B[MAX_RENDER_NUM];
 
@@ -167,13 +172,23 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     // TODO: Run Game Logic Thread
     // TODO: Run Asset Pre-Loadder Thread
 
-    MSG msg = {0};    
+    MSG msg = {0};
+    boolean running = true;
 
-    while(GetMessage(&msg, NULL, 0, 0)) {
-        LoadTitle();
+    while(running) {
         // Main Thread Will Process Window, Image Render
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+        {
+            if (msg.message == WM_QUIT)
+            {
+                running = false;
+                break;
+            }
+
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        LoadTitle();
     }
     return 0;
 }

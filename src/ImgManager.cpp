@@ -77,7 +77,7 @@ void RenderAllComponents(RenderData* srcArr, int objectCount) {
             srcArr[i].position.y + srcArr[i].position.height
         ); 
 
-        renderTarget->DrawBitmap(srcArr[i].sprite.ImgCache, rect, srcArr[i].opacity);
+        renderTarget->DrawBitmap(srcArr[i].ImgCache, rect, srcArr[i].opacity);
     }
 
     renderTarget->EndDraw();
@@ -104,7 +104,7 @@ void LoadAndCacheImg(unsigned char *file_name, int chanel, RenderData* dst) {
         data,
         imgWidth * imgChannels,
         &props,
-        &(dst->sprite.ImgCache)
+        &(dst->ImgCache)
     );
 
     dst->size.imgWidth    = imgWidth;

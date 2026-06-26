@@ -22,7 +22,7 @@ struct Sprite {
 };
 
 struct RenderData {
-    Sprite sprite;
+    ID2D1Bitmap* ImgCache;
     ImgSize size;
     Position position;
     float opacity;
@@ -35,6 +35,9 @@ typedef void (*UpdateFunc3)(struct ComponentData*);
 struct ComponentData {
     // 정말 필요한가?
     int componentType;
+
+    // 
+    int spriteID;
 
     // 렌더 스냅샷을 생성할 렌더링 정보
     Position position;
