@@ -18,7 +18,7 @@ char resPath[MAX_PATH_LEN];
 ID2D1HwndRenderTarget* renderTarget = nullptr;
 
 // 릴리즈 필요 > 메모리 누수 (재활용 객체)
-// ID2D1Bitmap* ImgCache = nullptr;
+ID2D1Bitmap* ImgCache = nullptr;
 
 D2D1_BITMAP_PROPERTIES props =
         D2D1::BitmapProperties(
@@ -63,7 +63,7 @@ void D2DFactoryInit(HWND hwnd, D2D1_SIZE_U size) {
  * @param src 렌더링 대상 비트맵
  * @param sceneAlpha 대상 비트맵의 투명도
  * **/
-void RenderAllComponents(RenderData* srcArr, int objectCount) {
+void RenderAllComponents(RenderData* srcArr, Sprite* srcSpriteArr, int objectCount) {
     renderTarget->BeginDraw();
 
     renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
@@ -77,7 +77,7 @@ void RenderAllComponents(RenderData* srcArr, int objectCount) {
             srcArr[i].position.y + srcArr[i].position.height
         ); 
 
-        renderTarget->DrawBitmap(srcArr[i].ImgCache, rect, srcArr[i].opacity);
+        renderTarget->DrawBitmap(srcSpriteArr[srcArr[i].spriteID].ImgCache, rect, srcArr[i].opacity);
     }
 
     renderTarget->EndDraw();
@@ -88,7 +88,7 @@ void RenderAllComponents(RenderData* srcArr, int objectCount) {
  * @param src 원본 이미지 데이터 구조체
  * @param dst 생성된 비트맵 객체를 저장할 출력 포인터
  * **/
-void LoadAndCacheImg(unsigned char *file_name, int chanel, RenderData* dst) {
+void LoadAndCacheImg(unsigned char *file_name, int chanel, Sprite* dst) {
     char file_path[MAX_PATH_LEN] = {0};
     
     sprintf_s(file_path, MAX_PATH_LEN, "%s\\%s", resPath, file_name);
@@ -107,11 +107,9 @@ void LoadAndCacheImg(unsigned char *file_name, int chanel, RenderData* dst) {
         &(dst->ImgCache)
     );
 
-    dst->size.imgWidth    = imgWidth;
-    dst->size.imgHeight   = imgHeight;
-    dst->size.imgChannels = imgChannels;
-
     stbi_image_free(data);
 }
+
+
 
 // TODO: implement preloaded image que (circular)

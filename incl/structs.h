@@ -19,13 +19,18 @@ struct Position
 
 struct Sprite {
     ID2D1Bitmap* ImgCache;
+    void Release() {
+        ImgCache->Release();
+        ImgCache = nullptr;
+    }
 };
 
 struct RenderData {
-    ID2D1Bitmap* ImgCache;
-    ImgSize size;
+    int spriteID;
     Position position;
     float opacity;
+    
+    bool enabled;
 };
 
 typedef void (*UpdateFunc1)(struct ComponentData*);
@@ -44,6 +49,8 @@ struct ComponentData {
     float opacity;
     // scale 구현이 필요한가?
     float scale;
+
+    bool enabled;
 
     UpdateFunc1 update1;
     UpdateFunc2 update2;
