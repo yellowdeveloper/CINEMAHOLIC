@@ -33,7 +33,7 @@ struct RenderData {
     bool enabled;
 };
 
-typedef void (*UpdateFunc1)(struct ComponentData*);
+typedef void (*MouseEvent)(struct ComponentData*);
 typedef void (*UpdateFunc2)(struct ComponentData*);
 typedef void (*UpdateFunc3)(struct ComponentData*);
 
@@ -52,7 +52,7 @@ struct ComponentData {
 
     bool enabled;
 
-    UpdateFunc1 update1;
+    MouseEvent mouseEvent;
     UpdateFunc2 update2;
     UpdateFunc3 update3;
 };

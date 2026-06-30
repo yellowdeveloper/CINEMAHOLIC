@@ -25,6 +25,9 @@
 // 6: shut down
 int game_state = 0;
 
+int mouseX = 0;
+int mouseY = 0;
+
 // 컴포넌트 관리 :: 배열
 ComponentData ComponentsArr[MAX_COMPONENT_NUM];
 
@@ -83,32 +86,33 @@ void LoadTitle() {
         
         CacheArr[0].Release();
 
+        // Component no.0 = start button
+        ComponentsArr[0].spriteID = 2;
+        ComponentsArr[0].enabled = true;
+
+        size = CacheArr[ComponentsArr[0].spriteID].ImgCache->GetPixelSize();
+        ComponentsArr[0].position.x = 530;
+        ComponentsArr[0].position.y = 440;
+        ComponentsArr[0].position.width = size.width;
+        ComponentsArr[0].position.height = size.height;
+        ComponentsArr[0].opacity = 1.0f;
+        ComponentsArr[0].mouseEvent = ButtonHover;
+
+        // Component no.1 = load button
+        ComponentsArr[1].spriteID = 3;
+        ComponentsArr[1].enabled = true;
+
+        size = CacheArr[ComponentsArr[1].spriteID].ImgCache->GetPixelSize();
+        ComponentsArr[1].position.x = 530;
+        ComponentsArr[1].position.y = 560;
+        ComponentsArr[1].position.width = size.width;
+        ComponentsArr[1].position.height = size.height;
+        ComponentsArr[1].opacity = 1.0f;
+        ComponentsArr[1].mouseEvent = ButtonHover;
+
         game_state++;
     }
     RenderData titleImg;
-
-    // Component no.0 = start button
-    ComponentsArr[0].spriteID = 2;
-    ComponentsArr[0].enabled = true;
-
-    size = CacheArr[ComponentsArr[0].spriteID].ImgCache->GetPixelSize();
-    ComponentsArr[0].position.x = 530;
-    ComponentsArr[0].position.y = 440;
-    ComponentsArr[0].position.width = size.width;
-    ComponentsArr[0].position.height = size.height;
-    ComponentsArr[0].opacity = 1.0f;
-
-    // Component no.1 = load button
-    ComponentsArr[1].spriteID = 3;
-    ComponentsArr[1].enabled = true;
-
-    size = CacheArr[ComponentsArr[1].spriteID].ImgCache->GetPixelSize();
-    ComponentsArr[1].position.x = 530;
-    ComponentsArr[1].position.y = 560;
-    ComponentsArr[1].position.width = size.width;
-    ComponentsArr[1].position.height = size.height;
-    ComponentsArr[1].opacity = 1.0f;
-    ComponentsArr[1].update1 = ButtonHover;
 
     titleImg.spriteID = 1;
     size = CacheArr[titleImg.spriteID].ImgCache->GetPixelSize();
@@ -164,6 +168,15 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             return 0;
         }
 
+        case WM_MOUSEMOVE : {
+            int x = LOWORD(lParam);
+            int y = HIWORD(lParam);
+
+            mouseX = x;
+            mouseY = y;
+            return 0;
+        }
+
         default :
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
@@ -205,6 +218,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     // Show Production Logo And Change State to title
 
     // TODO: Run Game Logic Thread
+    std::thread update(UpdateThread, ComponentsArr, MAX_COMPONENT_NUM);
     // TODO: Run Asset Pre-Loadder Thread
 
     MSG msg = {0};
