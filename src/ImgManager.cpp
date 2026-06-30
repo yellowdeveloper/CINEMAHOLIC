@@ -60,8 +60,9 @@ void D2DFactoryInit(HWND hwnd, D2D1_SIZE_U size) {
 
 /**
  * @brief Direct2D를 이용해 대상 비트맵을 화면에 그린다.
- * @param src 렌더링 대상 비트맵
- * @param sceneAlpha 대상 비트맵의 투명도
+ * @param srcArr 렌더링 정보 배열
+ * @param srcSpriteArr 대상 비트맵 배열
+ * @param objectCount 렌더링 배열에 담긴 객체 수
  * **/
 void RenderAllComponents(RenderData* srcArr, Sprite* srcSpriteArr, int objectCount) {
     renderTarget->BeginDraw();
@@ -85,13 +86,14 @@ void RenderAllComponents(RenderData* srcArr, Sprite* srcSpriteArr, int objectCou
 
 /**
  * @brief 이미지 데이터를 Direct 2D 비트맵으로 캐싱한다. 원본 이미지 데이터는 release 된다.
- * @param src 원본 이미지 데이터 구조체
- * @param dst 생성된 비트맵 객체를 저장할 출력 포인터
+ * @param file_name 원본 이미지 파일 이름
+ * @param chanel 불러올 채널 수 기본적으로 4 (RGBA)
+ * @param dst 캐싱할 Sprite 구조체 포인터
  * **/
-void LoadAndCacheImg(unsigned char *file_name, int chanel, Sprite* dst) {
+void LoadAndCacheImg(unsigned char *fileName, int chanel, Sprite* dst) {
     char file_path[MAX_PATH_LEN] = {0};
     
-    sprintf_s(file_path, MAX_PATH_LEN, "%s\\%s", resPath, file_name);
+    sprintf_s(file_path, MAX_PATH_LEN, "%s\\%s", resPath, fileName);
 
     int imgWidth, imgHeight, imgChannels;
 
@@ -110,6 +112,72 @@ void LoadAndCacheImg(unsigned char *file_name, int chanel, Sprite* dst) {
     stbi_image_free(data);
 }
 
+void ClearCache(Sprite* cacheArr, size_t max_cache) {
+    for (size_t i = 0; i < max_cache; i++) {
+        if (cacheArr[i].ImgCache) {
+            cacheArr[i].Release();
+        }
+    }
+}
 
+void RenderLoadingAnimation(D2D1::ColorF color, int count) {
+    D2D1_SIZE_F size = renderTarget->GetSize();
 
+    int radius[3] = {1, 3, 5};
+    
+    D2D1_ELLIPSE ellipse1 = D2D1::Ellipse(D2D1::Point2F(size.width - 20.0f, size.height - 20.0f), radius[count%3], radius[count%3]);
+    D2D1_ELLIPSE ellipse2 = D2D1::Ellipse(D2D1::Point2F(size.width - 40.0f, size.height - 20.0f), radius[(count+1)%3], radius[(count+1)%3]);
+    D2D1_ELLIPSE ellipse3 = D2D1::Ellipse(D2D1::Point2F(size.width - 60.0f, size.height - 20.0f), radius[(count+2)%3], radius[(count+2)%3]);
+
+    ID2D1SolidColorBrush* pWhiteBrush;
+
+    HRESULT hr = renderTarget->CreateSolidColorBrush(
+        D2D1::ColorF(D2D1::ColorF::White),
+        &pWhiteBrush
+    );
+    
+    renderTarget->BeginDraw();
+
+    renderTarget->Clear(color);
+
+    renderTarget->FillEllipse(ellipse1, pWhiteBrush);
+    renderTarget->FillEllipse(ellipse2, pWhiteBrush);
+    renderTarget->FillEllipse(ellipse3, pWhiteBrush);
+
+    renderTarget->EndDraw();
+    pWhiteBrush->Release();
+}
+
+void RenderSingleSprite(Sprite srcSprite, float x, float y, float opacity) {
+    D2D1_RECT_F rect = D2D1::RectF(
+        x,
+        y,
+        x + (float)srcSprite.ImgCache->GetPixelSize().width,
+        y + (float)srcSprite.ImgCache->GetPixelSize().height
+    );
+
+    renderTarget->BeginDraw();
+
+    renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
+
+    renderTarget->DrawBitmap(srcSprite.ImgCache, rect, opacity);
+
+    renderTarget->EndDraw();
+}
+
+void MatchRenderData(RenderData* dst, ComponentData* src) {
+    dst->enabled = true;
+
+    dst->spriteID = src->spriteID;
+    dst->position = src->position;
+    dst->opacity = src->opacity;
+}
+
+void SetRenderData(RenderData* dst, int spriteID, Position pos, float opacity) {
+    dst->enabled = true;
+
+    dst->spriteID = spriteID;
+    dst->position = pos;
+    dst->opacity = opacity;
+}
 // TODO: implement preloaded image que (circular)

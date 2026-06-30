@@ -15,9 +15,9 @@ if not exist build\debug mkdir build\debug
 
 cl /Zi /Od /c ^
     /I incl /Fo"build\\debug\\" /Fd"build\\debug\\" ^
-    main.cpp src\ImgManager.cpp src\ObjectController.cpp
+    main.cpp src\ImgManager.cpp src\ObjectController.cpp src\Scenes.cpp src\Events.cpp
 
-link build\debug\main.obj build\debug\ImgManager.obj build\debug\ObjectController.obj ^
+link build\debug\main.obj build\debug\ImgManager.obj build\debug\ObjectController.obj build\debug\Scenes.obj build\debug\Events.obj ^
     User32.lib Gdi32.lib d2d1.lib ^
     /DEBUG ^
     /ILK:build\debug\CINEMA_HOLIC.ilk ^
@@ -31,9 +31,9 @@ goto END
 if not exist build\release mkdir build\release
 
 cl /c /I incl /Fo"build\\release\\" ^
-    main.cpp src\ImgManager.cpp src\ObjectController.cpp
+    main.cpp src\ImgManager.cpp src\ObjectController.cpp src\Scenes.cpp src\Events.cpp
 
-link build\release\main.obj build\release\ImgManager.obj build\release\ObjectController.obj ^
+link build\release\main.obj build\release\ImgManager.obj build\release\ObjectController.obj build\release\Scenes.obj build\release\Events.obj ^
     User32.lib Gdi32.lib d2d1.lib ^
     /OUT:build\release\CINEMA_HOLIC.exe ^
     /SUBSYSTEM:WINDOWS

@@ -1,6 +1,7 @@
 #ifndef Structs_H
 #define Structs_H
 
+#include <windows.h>
 #include "d2d1_1.h"
 
 struct ImgSize {
@@ -33,9 +34,11 @@ struct RenderData {
     bool enabled;
 };
 
+#define MAX_MOUSE_EVENT 5
+#define MAX_UPDATE_EVENT 5
+
 typedef void (*MouseEvent)(struct ComponentData*);
-typedef void (*UpdateFunc2)(struct ComponentData*);
-typedef void (*UpdateFunc3)(struct ComponentData*);
+typedef void (*UpdateFunc)(struct ComponentData*);
 
 struct ComponentData {
     // 정말 필요한가?
@@ -52,9 +55,15 @@ struct ComponentData {
 
     bool enabled;
 
-    MouseEvent mouseEvent;
-    UpdateFunc2 update2;
-    UpdateFunc3 update3;
+    MouseEvent mouseEvents[MAX_MOUSE_EVENT];
+    UpdateFunc updateEvents[MAX_UPDATE_EVENT];
+};
+
+typedef enum UpdateState {
+    LOADING,
+    PROCESSING,
+    PAUSED,
+    EXIT
 };
 
 #endif
