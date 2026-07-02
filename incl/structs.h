@@ -37,7 +37,7 @@ struct RenderData {
 #define MAX_MOUSE_EVENT 5
 #define MAX_UPDATE_EVENT 5
 
-typedef void (*MouseEvent)(struct ComponentData*);
+typedef void (*MouseEvent)(struct ComponentData*, void* customArgs1);
 typedef void (*UpdateFunc)(struct ComponentData*);
 
 struct ComponentData {
@@ -56,6 +56,9 @@ struct ComponentData {
     bool enabled;
 
     MouseEvent mouseEvents[MAX_MOUSE_EVENT];
+
+    void* mouseEvCustomArgs[MAX_MOUSE_EVENT];
+
     UpdateFunc updateEvents[MAX_UPDATE_EVENT];
 };
 
@@ -65,5 +68,7 @@ typedef enum UpdateState {
     PAUSED,
     EXIT
 };
+
+typedef void (*SceneFunc)(int*, ComponentData*, RenderData*, Sprite*);
 
 #endif

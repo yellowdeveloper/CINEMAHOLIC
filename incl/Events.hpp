@@ -7,6 +7,8 @@ extern int mouseY;
 extern bool mouseLButtonPressed;
 extern bool mouseRButtonPressed;
 
-void CommonButtonEvents(ComponentData* data);
+extern SceneFunc nextScene;
+
+void SceneButtonEvents(ComponentData* data, void* scene);
 
 #endif /* Events_H */

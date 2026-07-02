@@ -19,9 +19,10 @@ void SetComponentData(ComponentData* data, int spriteID, Position pos, float sca
     data->opacity = opacity;
 }
 
-void AddMouseEvent(ComponentData* data, void (*func)(ComponentData*), int idx) {
+void AddMouseEvent(ComponentData* data, void (*func)(ComponentData*, void*), void* customArgs, int idx) {
     if (idx < MAX_MOUSE_EVENT) {
         data->mouseEvents[idx] = func;
+        data->mouseEvCustomArgs[idx] = customArgs;
     }
 }
 
@@ -32,14 +33,14 @@ void AddUpdateEvent(ComponentData* data, void (*func)(ComponentData*), int idx) 
 }
 
 void UpdateThread(ComponentData* components, size_t max_compo) {
-    while(1) {
+    while(updateState != EXIT) {
         WaitForSingleObject(g_UpdateEvent, INFINITE);
-        
+
         for (size_t  i = 0; i < max_compo; i++) {
             if (components[i].enabled) {
                 for (int j = 0; j < MAX_MOUSE_EVENT; j++) {
                     if (components[i].mouseEvents[j]) {
-                        components[i].mouseEvents[j](&components[i]);
+                        components[i].mouseEvents[j](&components[i], components[i].mouseEvCustomArgs[j]);
                     }
                 }
 

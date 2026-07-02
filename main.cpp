@@ -2,6 +2,7 @@
 // standard headers
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 // win api
 #include <windows.h>
 // directx
@@ -17,8 +18,10 @@
 #include "Events.hpp"
 
 #define MAX_COMPONENT_NUM 1024
+#define MAX_FPS 60
+#define FRAME_TIME float(1000.0f / MAX_FPS)
 
-// 0: loading
+// 0: init
 // 1: title
 // 2: game - tycoon
 // 3: game - visual novel
@@ -40,6 +43,8 @@ HANDLE g_UpdateEvent = CreateEvent(
     NULL
 );
 UpdateState updateState = PROCESSING;
+SceneFunc currentScene = LoadTitle;
+SceneFunc nextScene = nullptr;
 
 // 컴포넌트 관리 :: 배열
 ComponentData ComponentsArr[MAX_COMPONENT_NUM];
@@ -53,6 +58,9 @@ RenderData RenderBuff_B[MAX_COMPONENT_NUM];
 // 비트맵 캐시 관리 :: 배열
 // 이미지 미리 로드
 Sprite CacheArr[MAX_COMPONENT_NUM];
+
+// 게임 프레임 레이트 관리
+clock_t start = clock();
 
 // Window Procedure : CALLBACK Function = Process Messages From OS
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -151,12 +159,18 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
 
     // Show Production Logo And Change State to title
 
-    // TODO: Run Game Logic Thread
+    // Run Game Logic Thread
     std::thread update(UpdateThread, ComponentsArr, MAX_COMPONENT_NUM);
     // TODO: Run Asset Pre-Loadder Thread
 
     MSG msg = {0};
     boolean running = true;
+
+    LARGE_INTEGER frequency, start, end;
+    double deltaTime = 0.0f;
+
+    QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
+    QueryPerformanceCounter(&start);
 
     while(running) {
         // Main Thread Will Process Window, Image Render
@@ -170,15 +184,37 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
 
             TranslateMessage(&msg);
             DispatchMessage(&msg);
+
+            if (!running) break;
         }
+
+        if (deltaTime < FRAME_TIME) {
+            QueryPerformanceCounter(&end);
+            deltaTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart * 1000.0f;
+            continue;
+        }
+
+        QueryPerformanceCounter(&start);
+
         if (updateState == LOADING) {
             ClearComponents(ComponentsArr, MAX_COMPONENT_NUM);
             ClearCache(CacheArr, MAX_COMPONENT_NUM);
-            LoadingScene();
+
+            LoadingScene(nextScene, &game_state, ComponentsArr, RenderBuff_A, CacheArr);
 
             continue;
         }
-        LoadTitle(&game_state, ComponentsArr, RenderBuff_A, CacheArr);
+
+        if (currentScene) 
+            currentScene(&game_state, ComponentsArr, RenderBuff_A, CacheArr);
     }
+
+    updateState = EXIT;
+    SetEvent(g_UpdateEvent);
+
+    if (update.joinable()) {
+        update.join();
+    }
+
     return 0;
 }
