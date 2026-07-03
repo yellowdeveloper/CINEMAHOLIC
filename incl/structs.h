@@ -53,6 +53,9 @@ typedef void (*UpdateFunc)(struct ComponentData*);
 
 /// @brief 컴포넌트 정보 구조체
 struct ComponentData {
+    ///< 컴포넌트의 활성화 여부
+    bool enabled;
+
     // 정말 필요한가?
     int componentType;
 
@@ -61,19 +64,13 @@ struct ComponentData {
 
     ///< 렌더 스냅샷(RenderData)에 업데이트 할 위치 정보
     Position position;
-
     ///< 렌더 스냅샷(RenderData)에 업데이트 할 투명도 정보
     float opacity;
-
-    // scale 구현이 필요한가?
+    //< scale 구현이 필요한가?
     float scale;
-
-    ///< 컴포넌트의 활성화 여부
-    bool enabled;
 
     ///< 마우스 이벤트 함수 배열
     MouseEvent mouseEvents[MAX_MOUSE_EVENT];
-
     ///< 마우스 이벤트에 사용할 커스텀 인자 배열
     void* mouseEvCustomArgs[MAX_MOUSE_EVENT];
 
@@ -87,11 +84,23 @@ struct ComponentData {
  */
 typedef enum UpdateState {
     LOADING,     ///< 로딩 중 상태
-    PROCESSING,  ///< ㄱ
-    PAUSED,      ///<
-    EXIT
+    PROCESSING,  ///< 게임 진행 중 상태
+    PAUSED,      ///< 정지 상태
+    EXIT         ///< 종료 상태
 };
 
-typedef void (*SceneFunc)(int*, ComponentData*, RenderData*, Sprite*);
+/**
+ * @brief 렌더 버퍼 관리용
+ * @note 레이스 컨디션 방지 및 스레드 동기화를 위해 사용
+ */
+typedef struct RenderContext {
+    RenderData* a;
+    RenderData* b;
+
+    int renderCount;
+    int lock;
+};
+
+typedef int (*SceneFunc)(int*, ComponentData*, RenderData*, Sprite*);
 
 #endif

@@ -5,12 +5,16 @@ void ClearComponents(ComponentData* components, size_t max_compo) {
     for (size_t  i = 0; i < max_compo; i++) {
         if (components[i].enabled) {
             components[i].enabled = false;
+
+            memset(components[i].mouseEvents, 0, sizeof(components[i].mouseEvents));
+            memset(components[i].updateEvents, 0, sizeof(components[i].updateEvents));
         }
     }
 }
 
 void SetComponentData(ComponentData* data, int spriteID, Position pos, float scale, float opacity) {
     data->enabled = true;
+
     data->spriteID = spriteID;
     data->position.x = pos.x;
     data->position.y = pos.y;
