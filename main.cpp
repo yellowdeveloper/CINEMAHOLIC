@@ -200,13 +200,16 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
             ClearComponents(ComponentsArr, MAX_COMPONENT_NUM);
             ClearCache(CacheArr, MAX_COMPONENT_NUM);
 
-            LoadingScene(nextScene, &game_state, ComponentsArr, RenderBuff_A, CacheArr);
+            LoadingScene(&currentScene, &game_state, ComponentsArr, RenderBuff_A, CacheArr);
 
             continue;
         }
 
-        if (currentScene) 
-            currentScene(&game_state, ComponentsArr, RenderBuff_A, CacheArr);
+        if (currentScene)  {
+            int num = currentScene(&game_state, ComponentsArr, RenderBuff_A, CacheArr);
+            
+            RenderAllComponents(RenderBuff_A, CacheArr, num);
+        }
     }
 
     updateState = EXIT;
