@@ -3,6 +3,7 @@
 
 #include <windows.h>
 #include "d2d1_1.h"
+#include <mutex>
 
 /// @brief 이미지 크기 구조체
 struct ImgSize {
@@ -94,13 +95,13 @@ typedef enum UpdateState {
  * @note 레이스 컨디션 방지 및 스레드 동기화를 위해 사용
  */
 typedef struct RenderContext {
-    RenderData* a;
-    RenderData* b;
+    RenderData* updateBuffer;
+    RenderData* renderBuffer;
 
     int renderCount;
-    int lock;
+    std::mutex lock;
 };
 
-typedef int (*SceneFunc)(int*, ComponentData*, RenderData*, Sprite*);
+typedef void (*SceneFunc)(int*, ComponentData*, RenderData*, Sprite*);
 
 #endif

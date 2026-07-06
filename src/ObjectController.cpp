@@ -36,12 +36,16 @@ void AddUpdateEvent(ComponentData* data, void (*func)(ComponentData*), int idx) 
     }
 }
 
-void UpdateThread(ComponentData* components, size_t max_compo) {
+void UpdateThread(ComponentData* components, RenderContext *rContext, size_t max_compo) {
     while(updateState != EXIT) {
+        int rCount = 0;
+
         WaitForSingleObject(g_UpdateEvent, INFINITE);
 
         for (size_t  i = 0; i < max_compo; i++) {
             if (components[i].enabled) {
+                rCount++;
+
                 for (int j = 0; j < MAX_MOUSE_EVENT; j++) {
                     if (components[i].mouseEvents[j]) {
                         components[i].mouseEvents[j](&components[i], components[i].mouseEvCustomArgs[j]);
@@ -53,8 +57,19 @@ void UpdateThread(ComponentData* components, size_t max_compo) {
                         components[i].updateEvents[j](&components[i]);
                     }
                 }
+                
+                rContext->lock.lock();
+
+                rContext->updateBuffer[i].enabled  = true;
+                rContext->updateBuffer[i].spriteID = components[i].spriteID;
+                rContext->updateBuffer[i].position = components[i].position;
+                rContext->updateBuffer[i].opacity  = components[i].opacity;
+
+                rContext->lock.unlock();
             }
         }
+
+        rContext->renderCount = rCount;
         Sleep(1);
     }
 }

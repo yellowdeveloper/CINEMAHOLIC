@@ -6,65 +6,103 @@
 #include "ObjectController.hpp"
 #include "Events.hpp"
 
-int ExtralScene(int *game_state, ComponentData* ComponentsArr, RenderData* RenderBuff, Sprite* CacheArr) {
+void MiniGameScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     if (updateState == LOADING) {
-        updateState = PROCESSING;
-        return 0;
-    }
 
-    return 0;
+        *game_state = 4;
+
+        updateState = PROCESSING;
+    }
 }
 
-int NovelScene(int *game_state, ComponentData* ComponentsArr, RenderData* RenderBuff, Sprite* CacheArr) {
+void TycoonScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
+    int spriteID = 0;
+    D2D1_SIZE_U size;
+
+    if (updateState == LOADING) {
+        CacheArr[0].ImgCache = GetSolidSprite(0xFFF58742);
+        LoadAndCacheImg((unsigned char *)"dotMainCrStand.png", 4, &CacheArr[1]);
+        // LoadAndCacheImg((unsigned char *)".png", 4, &CacheArr[2]);
+
+        spriteID = 0;
+        size = CacheArr[spriteID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, 1280.0f, 720.0f}, 1.0f, 1.0f);
+
+        spriteID = 1;
+        size = CacheArr[spriteID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[1], spriteID, {605.0f, 286.5f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+
+        *game_state = 2;
+
+        updateState = PROCESSING;
+    }
+}
+
+void NovelScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
+    int spriteID = 0;
+    D2D1_SIZE_U size;
+
+    if (updateState == LOADING) {
+        CacheArr[0].ImgCache = GetSolidSprite(0xFFB0C9FF);
+        LoadAndCacheImg((unsigned char *)"character1_standing.png", 4, &CacheArr[1]);
+        LoadAndCacheImg((unsigned char *)"bottom_panel.png", 4, &CacheArr[2]);
+
+        spriteID = 0;
+        size = CacheArr[spriteID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, 1280.0f, 720.0f}, 1.0f, 1.0f);
+        
+        spriteID = 1;
+        size = CacheArr[spriteID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[1], spriteID, {0.0f, 223.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+
+        spriteID = 2;
+        size = CacheArr[spriteID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[2], spriteID, {150.0f, 375.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+
+        *game_state = 3;
+
+        updateState = PROCESSING;
+    }
+}
+
+void TestScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     int spriteID = 0;
     D2D1_SIZE_U size;
 
     if (updateState == LOADING) {    
         LoadAndCacheImg((unsigned char *)"title.png", 4, &CacheArr[0]);
-        LoadAndCacheImg((unsigned char *)"character1_standing.png", 4, &CacheArr[1]);
-        LoadAndCacheImg((unsigned char *)"bottom_panel.png", 4, &CacheArr[2]);
-        LoadAndCacheImg((unsigned char *)"gameStartBtn.png", 4, &CacheArr[3]);
-        LoadAndCacheImg((unsigned char *)"gameLoadBtn.png", 4, &CacheArr[4]);
+        LoadAndCacheImg((unsigned char *)"novelBtn.png", 4, &CacheArr[1]);
+        LoadAndCacheImg((unsigned char *)"tycoonBtn.png", 4, &CacheArr[2]);
+        LoadAndCacheImg((unsigned char *)"miniGameBtn.png", 4, &CacheArr[3]);
 
+        spriteID = 0;
+        size = CacheArr[spriteID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        AddMouseEvent(&ComponentsArr[0], SceneButtonEvents, (void*)NovelScene, 0);
+        
         spriteID = 1;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 223.0f, (float)size.width, (float)size.height}, 1.0f, 0.5f);
+        SetComponentData(&ComponentsArr[1], spriteID, {586.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        AddMouseEvent(&ComponentsArr[1], SceneButtonEvents, (void*)NovelScene, 0);
 
         spriteID = 2;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], spriteID, {150.0f, 375.0f, (float)size.width, (float)size.height}, 1.0f, 0.5f);
+        SetComponentData(&ComponentsArr[2], spriteID, {576.0f, 500.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        AddMouseEvent(&ComponentsArr[2], SceneButtonEvents, (void*)TycoonScene, 0);
 
         spriteID = 3;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[2], spriteID, {530.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 0.5f);
-        AddMouseEvent(&ComponentsArr[2], SceneButtonEvents, (void*)NovelScene, 0);
-
-        spriteID = 4;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[3], spriteID, {530.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 0.5f);
-        AddMouseEvent(&ComponentsArr[3], SceneButtonEvents, (void*)ExtralScene, 0);
-
-        updateState = PROCESSING;
+        SetComponentData(&ComponentsArr[3], spriteID, {543.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        AddMouseEvent(&ComponentsArr[3], SceneButtonEvents, (void*)MiniGameScene, 0);
 
         *game_state = 3;
 
-        return 0;
+        updateState = PROCESSING;        
     }
-
-    spriteID = 0;
-    size = CacheArr[spriteID].ImgCache->GetPixelSize();
-    SetRenderData(&RenderBuff[0], spriteID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 0.10f);
-
-    MatchRenderData(&RenderBuff[1], &ComponentsArr[0]);
-    MatchRenderData(&RenderBuff[2], &ComponentsArr[1]);
-    MatchRenderData(&RenderBuff[3], &ComponentsArr[2]);
-    MatchRenderData(&RenderBuff[4], &ComponentsArr[3]);
-
-    return 5;
 }
 
 // Title Screen : Scene number 0 ~ 1
-int LoadTitle(int *game_state, ComponentData* ComponentsArr, RenderData* RenderBuff, Sprite* CacheArr) {
+void LoadTitle(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     D2D1_SIZE_U size;
     int spriteID = 0;
 
@@ -93,13 +131,13 @@ int LoadTitle(int *game_state, ComponentData* ComponentsArr, RenderData* RenderB
         spriteID = 1;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[0], spriteID, {530.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
-        AddMouseEvent(&ComponentsArr[0], SceneButtonEvents, (void*)NovelScene, 0);
+        AddMouseEvent(&ComponentsArr[0], SceneButtonEvents, (void*)TestScene, 0);
 
         // Component no.1 = load button
         spriteID = 2;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[1], spriteID, {530.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
-        AddMouseEvent(&ComponentsArr[1], SceneButtonEvents, (void*)NovelScene, 0);
+        AddMouseEvent(&ComponentsArr[1], SceneButtonEvents, (void*)TestScene, 0);
 
         while(op > 0.0f) {
             RenderSingleSprite(productionPage, 0.0f, 0.0f, op);
@@ -111,19 +149,8 @@ int LoadTitle(int *game_state, ComponentData* ComponentsArr, RenderData* RenderB
         
         productionPage.Release();
         
-        (*game_state)++;
-
-        return 0;
+        *game_state = 1;
     }
-
-    spriteID = 0;
-    size = CacheArr[spriteID].ImgCache->GetPixelSize();
-    SetRenderData(&RenderBuff[0], spriteID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f);
-
-    MatchRenderData(&RenderBuff[1], &ComponentsArr[0]);
-    MatchRenderData(&RenderBuff[2], &ComponentsArr[1]);
-
-    return 3;
 }
 
 void LoadingScene(SceneFunc *scene, int *game_state, ComponentData *ComponentsArr, RenderData *RenderBuff, Sprite *CacheArr) {

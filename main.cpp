@@ -36,6 +36,11 @@ int mouseY = 0;
 bool mouseLButtonPressed = false;
 bool mouseRButtonPressed = false;
 
+bool upButtonPressed    = false;
+bool leftButtonPressed  = false;
+bool downButtonPressed  = false;
+bool rightButtonPressed = false;
+
 HANDLE g_UpdateEvent = CreateEvent(
     NULL,   // 보안
     TRUE,   // Manual Reset
@@ -52,6 +57,8 @@ ComponentData ComponentsArr[MAX_COMPONENT_NUM];
 // 이미지 렌더링 :: 더블 버퍼
 // 로직 스레드 > 렌더 스냅샷 write
 // 렌더 타임에 buffer swap > 렌더링 진행
+RenderContext renderContext;
+
 RenderData RenderBuff_A[MAX_COMPONENT_NUM];
 RenderData RenderBuff_B[MAX_COMPONENT_NUM];
 
@@ -113,6 +120,34 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             return 0;
         }
 
+        case WM_KEYDOWN : {
+            switch(wParam) {
+                case 'W' :
+                case VK_UP : {
+                    upButtonPressed = true;
+                }
+
+                case 'A' :
+                case VK_LEFT : {
+                    leftButtonPressed = true;
+                }
+
+                case 'S' :
+                case VK_DOWN : {
+                    downButtonPressed = true;
+                }
+
+                case 'D' :
+                case VK_RIGHT : {
+                    rightButtonPressed = true;
+                }
+            }
+            return 0;
+        }
+
+        case WM_KEYUP :
+        return 0;
+
         default :
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
     }
@@ -149,10 +184,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
         return 0;
     }
 
+    // init settings
+    GetResourceDir();
+
+    renderContext.updateBuffer = RenderBuff_A;
+    renderContext.renderBuffer = RenderBuff_B;
+
     ShowWindow(hwnd, nCmdShow);
     UpdateWindow(hwnd);
 
-    GetResourceDir();
     GetClientRect(hwnd, &rc);
     D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
     D2DFactoryInit(hwnd, size);    
@@ -160,7 +200,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     // Show Production Logo And Change State to title
 
     // Run Game Logic Thread
-    std::thread update(UpdateThread, ComponentsArr, MAX_COMPONENT_NUM);
+    std::thread update(UpdateThread, ComponentsArr, &renderContext, MAX_COMPONENT_NUM);
     // TODO: Run Asset Pre-Loadder Thread
 
     MSG msg = {0};
@@ -172,6 +212,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
     QueryPerformanceCounter(&start);
 
+    
     while(running) {
         // Main Thread Will Process Window, Image Render
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -206,9 +247,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
         }
 
         if (currentScene)  {
-            int num = currentScene(&game_state, ComponentsArr, RenderBuff_A, CacheArr);
-            
-            RenderAllComponents(RenderBuff_A, CacheArr, num);
+            renderContext.lock.lock();
+
+            RenderData* tmpSwap = renderContext.renderBuffer;;
+            renderContext.renderBuffer = renderContext.updateBuffer;
+            renderContext.updateBuffer = tmpSwap;
+
+            renderContext.lock.unlock();
+
+            RenderAllComponents(renderContext.renderBuffer, CacheArr, renderContext.renderCount);
         }
     }
 

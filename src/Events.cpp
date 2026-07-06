@@ -50,3 +50,7 @@ void SceneButtonEvents(ComponentData* data, void* scene) {
         }
     }
 }
+
+void CharacterMoveEvent(ComponentData* data) {
+    
+}

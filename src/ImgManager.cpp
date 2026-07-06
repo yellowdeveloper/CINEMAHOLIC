@@ -18,7 +18,7 @@ char resPath[MAX_PATH_LEN];
 ID2D1HwndRenderTarget* renderTarget = nullptr;
 
 // 릴리즈 필요 > 메모리 누수 (재활용 객체)
-ID2D1Bitmap* ImgCache = nullptr;
+// ID2D1Bitmap* ImgCache = nullptr;
 
 D2D1_BITMAP_PROPERTIES props =
         D2D1::BitmapProperties(
@@ -70,6 +70,7 @@ void RenderAllComponents(RenderData* srcArr, Sprite* srcSpriteArr, int objectCou
     renderTarget->Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
     for (int i = 0; i < objectCount ; i++) {
+        if (!srcArr[i].enabled) continue;
 
         D2D1_RECT_F rect = D2D1::RectF(
             srcArr[i].position.x,
@@ -87,7 +88,7 @@ void RenderAllComponents(RenderData* srcArr, Sprite* srcSpriteArr, int objectCou
 /**
  * @brief 이미지 데이터를 Direct 2D 비트맵으로 캐싱한다. 원본 이미지 데이터는 release 된다.
  * @param file_name 원본 이미지 파일 이름
- * @param chanel 불러올 채널 수 기본적으로 4 (RGBA)
+ * @param chanel 불러올 채널 수 기본적으로 4 (ABGR)
  * @param dst 캐싱할 Sprite 구조체 포인터
  * **/
 void LoadAndCacheImg(unsigned char *fileName, int chanel, Sprite* dst) {
@@ -165,8 +166,28 @@ void RenderSingleSprite(Sprite srcSprite, float x, float y, float opacity) {
     renderTarget->EndDraw();
 }
 
+/**
+ * @brief
+ * @param hexColor 생성할 단색 비트맵의 색상 (BGRA hex code)
+ * @note 단색 비트맵은 RenderData 설정 시에 크기(width, height)를 직접 지정해줘야 합니다.
+ */
+ID2D1Bitmap* GetSolidSprite(UINT32 hexColor) {
+    ID2D1Bitmap* bitmap = nullptr;
+
+    renderTarget->CreateBitmap(
+        D2D1::SizeU(1, 1),
+        &hexColor,
+        sizeof(UINT32),
+        &props,
+        &bitmap
+    );
+
+    return bitmap;
+}
+
 void MatchRenderData(RenderData* dst, ComponentData* src) {
-    dst->enabled = true;
+    if (src->enabled) dst->enabled = true;
+    else dst->enabled = false;
 
     dst->spriteID = src->spriteID;
     dst->position = src->position;
