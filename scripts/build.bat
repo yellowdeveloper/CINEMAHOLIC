@@ -14,10 +14,10 @@ if "%1"=="release" goto RELEASE
 if not exist build\debug mkdir build\debug
 
 cl /Zi /Od /c ^
-    /I incl /Fo"build\\debug\\" /Fd"build\\debug\\" ^
-    main.cpp src\ImgManager.cpp src\ObjectController.cpp src\Scenes.cpp src\Events.cpp
+    /I incl /I src/custom_scripts /Fo"build\\debug\\" /Fd"build\\debug\\" ^
+    main.cpp src\*.cpp src\*.c src\custom_scripts\*.cpp src\custom_scripts\*.c
 
-link build\debug\main.obj build\debug\ImgManager.obj build\debug\ObjectController.obj build\debug\Scenes.obj build\debug\Events.obj ^
+link build\debug\*.obj ^
     User32.lib Gdi32.lib d2d1.lib ^
     /DEBUG ^
     /ILK:build\debug\CINEMA_HOLIC.ilk ^
@@ -30,10 +30,10 @@ goto END
 
 if not exist build\release mkdir build\release
 
-cl /c /I incl /Fo"build\\release\\" ^
-    main.cpp src\ImgManager.cpp src\ObjectController.cpp src\Scenes.cpp src\Events.cpp
+cl /c /I incl /I src/custom_scripts /Fo"build\\release\\" ^
+    main.cpp src\*.cpp src\*.c src\custom_scripts\*.cpp src\custom_scripts\*.c
 
-link build\release\main.obj build\release\ImgManager.obj build\release\ObjectController.obj build\release\Scenes.obj build\release\Events.obj ^
+link build\release\*.obj ^
     User32.lib Gdi32.lib d2d1.lib ^
     /OUT:build\release\CINEMA_HOLIC.exe ^
     /SUBSYSTEM:WINDOWS

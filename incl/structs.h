@@ -1,5 +1,5 @@
-#ifndef Structs_H
-#define Structs_H
+#ifndef CommonStructs_H
+#define CommonStructs_H
 
 #include <windows.h>
 #include "d2d1_1.h"
@@ -27,7 +27,7 @@ struct Position
 /// @brief 이미지 캐시 구조체
 struct Sprite {
     ///< 비트맵 캐시
-    ID2D1Bitmap* ImgCache; 
+    ID2D1Bitmap* ImgCache = nullptr; 
 
     ///< 할당된 비트맵 자원을 해제 및 포인터를 초기화
     void Release() {
@@ -49,9 +49,6 @@ struct RenderData {
 #define MAX_MOUSE_EVENT 5
 #define MAX_UPDATE_EVENT 5
 
-typedef void (*MouseEvent)(struct ComponentData*, void* customArgs1);
-typedef void (*UpdateFunc)(struct ComponentData*);
-
 /// @brief 컴포넌트 정보 구조체
 struct ComponentData {
     ///< 컴포넌트의 활성화 여부
@@ -70,13 +67,11 @@ struct ComponentData {
     //< scale 구현이 필요한가?
     float scale;
 
-    ///< 마우스 이벤트 함수 배열
-    MouseEvent mouseEvents[MAX_MOUSE_EVENT];
-    ///< 마우스 이벤트에 사용할 커스텀 인자 배열
-    void* mouseEvCustomArgs[MAX_MOUSE_EVENT];
 
-    ///< 업데이트 이벤트 함수 배열
-    UpdateFunc updateEvents[MAX_UPDATE_EVENT];
+    void* scriptData = nullptr;
+
+    void (*UpdateFunc)(ComponentData* self, float deltaTime) = nullptr;
+    void (*OnClickFunc)(ComponentData* self) = nullptr;
 };
 
 /**
@@ -95,13 +90,13 @@ typedef enum UpdateState {
  * @note 레이스 컨디션 방지 및 스레드 동기화를 위해 사용
  */
 typedef struct RenderContext {
-    RenderData* updateBuffer;
-    RenderData* renderBuffer;
+    RenderData* updateBuffer = nullptr;
+    RenderData* renderBuffer = nullptr;
 
     int renderCount;
     std::mutex lock;
 };
 
-typedef void (*SceneFunc)(int*, ComponentData*, RenderData*, Sprite*);
+typedef void (*SceneFunc)(int*, ComponentData*, Sprite*);
 
 #endif

@@ -1,38 +1,43 @@
+#include <stdio.h>
+
 #include "structs.h"
 #include "ObjectController.hpp"
-#include "Events.hpp"
+#include "InputManager.hpp"
+#include "sceneChangeButtonEvent.hpp"
 
 ComponentData *LPressedComponent = nullptr;
 
-void SceneButtonEvents(ComponentData* data, void* scene) {
-    float left = data->position.x;
-    float right = data->position.x + data->position.width;
-    float top = data->position.y;
-    float bottom = data->position.y + data->position.height;
+void SceneButtonEvents(ComponentData* self) {
+    float left = self->position.x;
+    float right = self->position.x + self->position.width;
+    float top = self->position.y;
+    float bottom = self->position.y + self->position.height;
 
-    SceneFunc targetScene = (SceneFunc)scene;
+    sceneChangeButtonData* data = (sceneChangeButtonData*)self->scriptData;
+
+    SceneFunc targetScene = (SceneFunc)data->scene;
 
     if (LPressedComponent == nullptr) {
 
         if ((mouseX > left && mouseX < right)&&(mouseY > top && mouseY < bottom)) {
 
-            data->opacity = 0.5f;
+            self->opacity = 0.5f;
 
             if (mouseLButtonPressed) {
-                LPressedComponent = data;
+                LPressedComponent = self;
 
-                data->opacity = 0.0f;
+                self->opacity = 0.0f;
             }
 
         }
 
-        else data->opacity = 1.0f;
+        else self->opacity = 1.0f;
     }
 
-    if (LPressedComponent == data) {
+    if (LPressedComponent == self) {
 
         if ((mouseX > left && mouseX < right)&&(mouseY > top && mouseY < bottom)) {
-            data->opacity = 0.0f;
+            self->opacity = 0.0f;
 
             if (!mouseLButtonPressed) {
                 LPressedComponent = nullptr;
@@ -43,14 +48,10 @@ void SceneButtonEvents(ComponentData* data, void* scene) {
             }
         }
         else {
-            data->opacity = 1.0f;
+            self->opacity = 1.0f;
 
             if (!mouseLButtonPressed)
                 LPressedComponent = nullptr;
         }
     }
-}
-
-void CharacterMoveEvent(ComponentData* data) {
-    
 }

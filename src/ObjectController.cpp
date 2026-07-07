@@ -6,8 +6,8 @@ void ClearComponents(ComponentData* components, size_t max_compo) {
         if (components[i].enabled) {
             components[i].enabled = false;
 
-            memset(components[i].mouseEvents, 0, sizeof(components[i].mouseEvents));
-            memset(components[i].updateEvents, 0, sizeof(components[i].updateEvents));
+            components[i].UpdateFunc = nullptr;
+            components[i].OnClickFunc = nullptr;
         }
     }
 }
@@ -23,19 +23,6 @@ void SetComponentData(ComponentData* data, int spriteID, Position pos, float sca
     data->opacity = opacity;
 }
 
-void AddMouseEvent(ComponentData* data, void (*func)(ComponentData*, void*), void* customArgs, int idx) {
-    if (idx < MAX_MOUSE_EVENT) {
-        data->mouseEvents[idx] = func;
-        data->mouseEvCustomArgs[idx] = customArgs;
-    }
-}
-
-void AddUpdateEvent(ComponentData* data, void (*func)(ComponentData*), int idx) {
-    if (idx < MAX_UPDATE_EVENT) {
-        data->updateEvents[idx] = func;
-    }
-}
-
 void UpdateThread(ComponentData* components, RenderContext *rContext, size_t max_compo) {
     while(updateState != EXIT) {
         int rCount = 0;
@@ -46,16 +33,12 @@ void UpdateThread(ComponentData* components, RenderContext *rContext, size_t max
             if (components[i].enabled) {
                 rCount++;
 
-                for (int j = 0; j < MAX_MOUSE_EVENT; j++) {
-                    if (components[i].mouseEvents[j]) {
-                        components[i].mouseEvents[j](&components[i], components[i].mouseEvCustomArgs[j]);
-                    }
+                if (components[i].UpdateFunc) {
+                    components[i].UpdateFunc(&components[i], deltaTime);
                 }
 
-                for (int j = 0; j < MAX_UPDATE_EVENT; j++) {
-                    if (components[i].updateEvents[j]) {
-                        components[i].updateEvents[j](&components[i]);
-                    }
+                if (components[i].OnClickFunc) {
+                    components[i].OnClickFunc(&components[i]);
                 }
                 
                 rContext->lock.lock();

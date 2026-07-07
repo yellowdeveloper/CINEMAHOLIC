@@ -1,5 +1,7 @@
-#ifndef Events_H
-#define Events_H
+#ifndef InpMGR_H
+#define InpMGR_H
+
+struct 
 
 extern int mouseX;
 extern int mouseY;
@@ -14,7 +16,4 @@ extern bool rightButtonPressed;
 
 extern SceneFunc nextScene;
 
-void SceneButtonEvents(ComponentData* data, void* scene);
-void CharacterMoveEvent(ComponentData* data);
-
-#endif /* Events_H */
+#endif /* InpMGR_H */

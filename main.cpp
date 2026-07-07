@@ -15,7 +15,7 @@
 #include "ImgManager.hpp"
 #include "ObjectController.hpp"
 #include "Scenes.hpp"
-#include "Events.hpp"
+#include "InputManager.hpp"
 
 #define MAX_COMPONENT_NUM 1024
 #define MAX_FPS 60
@@ -125,21 +125,25 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 case 'W' :
                 case VK_UP : {
                     upButtonPressed = true;
+                    break;
                 }
 
                 case 'A' :
                 case VK_LEFT : {
                     leftButtonPressed = true;
+                    break;
                 }
 
                 case 'S' :
                 case VK_DOWN : {
                     downButtonPressed = true;
+                    break;
                 }
 
                 case 'D' :
                 case VK_RIGHT : {
                     rightButtonPressed = true;
+                    break;
                 }
             }
             return 0;
@@ -212,7 +216,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
     QueryPerformanceCounter(&start);
 
-    
+    currentScene(&game_state, ComponentsArr, CacheArr);
+
     while(running) {
         // Main Thread Will Process Window, Image Render
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -241,7 +246,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
             ClearComponents(ComponentsArr, MAX_COMPONENT_NUM);
             ClearCache(CacheArr, MAX_COMPONENT_NUM);
 
-            LoadingScene(&currentScene, &game_state, ComponentsArr, RenderBuff_A, CacheArr);
+            LoadingScene(&currentScene, &game_state, ComponentsArr, CacheArr);
 
             continue;
         }
