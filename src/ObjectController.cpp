@@ -34,7 +34,7 @@ void UpdateThread(ComponentData* components, RenderContext *rContext, size_t max
                 rCount++;
 
                 if (components[i].UpdateFunc) {
-                    components[i].UpdateFunc(&components[i], deltaTime);
+                    components[i].UpdateFunc(&components[i], d_time_sync);
                 }
 
                 if (components[i].OnClickFunc) {

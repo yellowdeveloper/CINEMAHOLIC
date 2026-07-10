@@ -2,7 +2,7 @@
 #define SceneChangeBtnEv_H
 
 struct sceneChangeButtonData {
-    void* scene;
+    SceneFunc scene;
 };
 
 void SceneButtonEvents(ComponentData* self);

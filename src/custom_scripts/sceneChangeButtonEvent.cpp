@@ -3,6 +3,7 @@
 #include "structs.h"
 #include "ObjectController.hpp"
 #include "InputManager.hpp"
+#include "Scenes.hpp"
 #include "sceneChangeButtonEvent.hpp"
 
 ComponentData *LPressedComponent = nullptr;
@@ -13,9 +14,15 @@ void SceneButtonEvents(ComponentData* self) {
     float top = self->position.y;
     float bottom = self->position.y + self->position.height;
 
+    // TODO:: inputEV 직접 참조 하지 않고 render 처럼 snapshot 방식 고려
+    int mouseX = inputEV.mouseX;
+    int mouseY = inputEV.mouseY;
+
+    int mouseLButtonPressed = inputEV.mouseLButtonPressed;
+
     sceneChangeButtonData* data = (sceneChangeButtonData*)self->scriptData;
 
-    SceneFunc targetScene = (SceneFunc)data->scene;
+    SceneFunc targetScene = data->scene;
 
     if (LPressedComponent == nullptr) {
 

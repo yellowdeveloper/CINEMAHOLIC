@@ -14,8 +14,8 @@
 #include "structs.h"
 #include "ImgManager.hpp"
 #include "ObjectController.hpp"
-#include "Scenes.hpp"
 #include "InputManager.hpp"
+#include "Scenes.hpp"
 
 #define MAX_COMPONENT_NUM 1024
 #define MAX_FPS 60
@@ -30,16 +30,7 @@
 // 6: shut down
 int game_state = 0;
 
-int mouseX = 0;
-int mouseY = 0;
-
-bool mouseLButtonPressed = false;
-bool mouseRButtonPressed = false;
-
-bool upButtonPressed    = false;
-bool leftButtonPressed  = false;
-bool downButtonPressed  = false;
-bool rightButtonPressed = false;
+InputEv inputEV;
 
 HANDLE g_UpdateEvent = CreateEvent(
     NULL,   // 보안
@@ -68,6 +59,8 @@ Sprite CacheArr[MAX_COMPONENT_NUM];
 
 // 게임 프레임 레이트 관리
 clock_t start = clock();
+double fps = 0.0f;
+double d_time_sync = 0.0f;
 
 // Window Procedure : CALLBACK Function = Process Messages From OS
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -90,24 +83,24 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_LBUTTONDOWN : {
             int xPos = LOWORD(lParam);
             int yPos = HIWORD(lParam);
-            mouseLButtonPressed = true;
+            inputEV.mouseLButtonPressed = true;
             return 0;
         }
 
         case WM_LBUTTONUP : {
-            mouseLButtonPressed = false;
+            inputEV.mouseLButtonPressed = false;
             return 0;
         }
 
         case WM_RBUTTONDOWN : {
             int xPos = LOWORD(lParam);
             int yPos = HIWORD(lParam);
-            mouseRButtonPressed = true;
+            inputEV.mouseRButtonPressed = true;
             return 0;
         }
 
         case WM_RBUTTONUP : {
-            mouseRButtonPressed = false;
+            inputEV.mouseRButtonPressed = false;
             return 0;
         }
 
@@ -115,42 +108,20 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             int x = LOWORD(lParam);
             int y = HIWORD(lParam);
 
-            mouseX = x;
-            mouseY = y;
+            inputEV.mouseX = x;
+            inputEV.mouseY = y;
             return 0;
         }
 
         case WM_KEYDOWN : {
-            switch(wParam) {
-                case 'W' :
-                case VK_UP : {
-                    upButtonPressed = true;
-                    break;
-                }
-
-                case 'A' :
-                case VK_LEFT : {
-                    leftButtonPressed = true;
-                    break;
-                }
-
-                case 'S' :
-                case VK_DOWN : {
-                    downButtonPressed = true;
-                    break;
-                }
-
-                case 'D' :
-                case VK_RIGHT : {
-                    rightButtonPressed = true;
-                    break;
-                }
-            }
+            inputEV.keyStateArr[wParam] = PRESSED;
             return 0;
         }
 
-        case WM_KEYUP :
-        return 0;
+        case WM_KEYUP : {
+            inputEV.keyStateArr[wParam] = RELEASED;
+            return 0;
+        }
 
         default :
             return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -166,7 +137,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     wc.lpszClassName = CLASS_NAME;
     RegisterClass(&wc);
 
-    RECT rc = { 0, 0, 1280, 720 };
+    RECT rc = { 0, 0, SCREEN_HD_W, SCREEN_HD_H };
 
     AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
 
@@ -237,6 +208,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
         if (deltaTime < FRAME_TIME) {
             QueryPerformanceCounter(&end);
             deltaTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart * 1000.0f;
+            d_time_sync = deltaTime;
+            fps = 1000.0f / d_time_sync;
             continue;
         }
 

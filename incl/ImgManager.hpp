@@ -3,6 +3,13 @@
 
 #define MAX_PATH_LEN 256
 
+// TODO:: Screen mode 추가 및 토글 가능하도록 설정
+#define SCREEN_HD_W  1280
+#define SCREEN_HD_H  720
+
+#define SCREEN_FHD_W 1920
+#define SCREEN_FHD_H 1080
+
 extern char resPath[MAX_PATH_LEN];
 extern ID2D1HwndRenderTarget* renderTarget;
 

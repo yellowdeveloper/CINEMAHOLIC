@@ -1,19 +1,22 @@
 #ifndef InpMGR_H
 #define InpMGR_H
 
-struct 
+enum KeyState {
+    RELEASED,
+    PRESSED
+    // HOLD, DOUBLE 등 추가 가능
+};
 
-extern int mouseX;
-extern int mouseY;
+struct InputEv{
+    int mouseX;
+    int mouseY;
 
-extern bool mouseLButtonPressed;
-extern bool mouseRButtonPressed;
+    bool mouseLButtonPressed;
+    bool mouseRButtonPressed;
 
-extern bool upButtonPressed;
-extern bool leftButtonPressed;
-extern bool downButtonPressed;
-extern bool rightButtonPressed;
+    KeyState keyStateArr[256];
+};
 
-extern SceneFunc nextScene;
+extern InputEv inputEV;
 
 #endif /* InpMGR_H */

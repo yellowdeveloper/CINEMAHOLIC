@@ -99,4 +99,4 @@ typedef struct RenderContext {
 
 typedef void (*SceneFunc)(int*, ComponentData*, Sprite*);
 
-#endif
+#endif /* CommonStructs_H end */

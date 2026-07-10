@@ -5,9 +5,11 @@
 #include "ImgManager.hpp"
 #include "ObjectController.hpp"
 #include "InputManager.hpp"
+#include "Scenes.hpp"
 
 // custom_scripts to add events
 #include "custom_scripts/sceneChangeButtonEvent.hpp"
+#include "custom_scripts/player.hpp"
 
 void MiniGameScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     if (updateState == LOADING) {
@@ -29,11 +31,15 @@ void TycoonScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr
 
         spriteID = 0;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, 1280.0f, 720.0f}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
 
         spriteID = 1;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[1], spriteID, {605.0f, 286.5f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        ComponentsArr[1].scriptData = new playerData{
+            0.05f
+        };
+        ComponentsArr[1].UpdateFunc = playerMove;
 
         *game_state = 2;
 
@@ -52,8 +58,7 @@ void NovelScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr)
 
         spriteID = 0;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, 1280.0f, 720.0f}, 1.0f, 1.0f);
-
+        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
         
         spriteID = 1;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
@@ -86,17 +91,26 @@ void TestScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) 
         spriteID = 1;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[1], spriteID, {586.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
-        ComponentsArr[1].scriptData = new sceneChangeButtonData(
-            (void*)NovelScene
-        );
+        ComponentsArr[1].scriptData = new sceneChangeButtonData{
+            NovelScene
+        };
+        ComponentsArr[1].OnClickFunc = SceneButtonEvents;
 
         spriteID = 2;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[2], spriteID, {576.0f, 500.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        ComponentsArr[2].scriptData = new sceneChangeButtonData{
+            TycoonScene
+        };
+        ComponentsArr[2].OnClickFunc = SceneButtonEvents;
 
         spriteID = 3;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[3], spriteID, {543.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        ComponentsArr[3].scriptData = new sceneChangeButtonData{
+            MiniGameScene
+        };
+        ComponentsArr[3].OnClickFunc = SceneButtonEvents;
 
         *game_state = 3;
 
@@ -137,10 +151,18 @@ void LoadTitle(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) 
         spriteID = 1;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[1], spriteID, {530.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        ComponentsArr[1].scriptData = new sceneChangeButtonData{
+            TestScene
+        };
+        ComponentsArr[1].OnClickFunc = SceneButtonEvents;
 
         spriteID = 2;
         size = CacheArr[spriteID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[2], spriteID, {530.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        ComponentsArr[2].scriptData = new sceneChangeButtonData{
+            TestScene
+        };
+        ComponentsArr[2].OnClickFunc = SceneButtonEvents;
 
         while(op > 0.0f) {
             RenderSingleSprite(productionPage, 0.0f, 0.0f, op);
