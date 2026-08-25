@@ -16,6 +16,7 @@
 #include "ObjectController.hpp"
 #include "InputManager.hpp"
 #include "Scenes.hpp"
+#include "AudioManager.hpp"
 
 #define MAX_COMPONENT_NUM 1024
 #define MAX_FPS 60
@@ -159,7 +160,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
         return 0;
     }
 
-    // init settings
+    // resource directory init
     GetResourceDir();
 
     renderContext.updateBuffer = RenderBuff_A;
