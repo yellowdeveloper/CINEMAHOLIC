@@ -12,10 +12,10 @@ void ClearComponents(ComponentData* components, size_t max_compo) {
     }
 }
 
-void SetComponentData(ComponentData* data, int spriteID, Position pos, float scale, float opacity) {
+void SetComponentData(ComponentData* data, int resourceID, Position pos, float scale, float opacity) {
     data->enabled = true;
 
-    data->spriteID = spriteID;
+    data->resourceID = resourceID;
     data->position.x = pos.x;
     data->position.y = pos.y;
     data->position.width = pos.width;
@@ -44,7 +44,7 @@ void UpdateThread(ComponentData* components, RenderContext *rContext, size_t max
                 rContext->lock.lock();
 
                 rContext->updateBuffer[i].enabled  = true;
-                rContext->updateBuffer[i].spriteID = components[i].spriteID;
+                rContext->updateBuffer[i].resourceID = components[i].resourceID;
                 rContext->updateBuffer[i].position = components[i].position;
                 rContext->updateBuffer[i].opacity  = components[i].opacity;
 

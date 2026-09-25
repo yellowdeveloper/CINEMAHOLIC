@@ -22,6 +22,6 @@ void RenderLoadingAnimation(D2D1::ColorF color, int count);
 void RenderSingleSprite(Sprite srcSprite, float x, float y, float opacity);
 ID2D1Bitmap* GetSolidSprite(UINT32 hexColor);
 void MatchRenderData(RenderData* dst, ComponentData* src);
-void SetRenderData(RenderData* dst, int spriteID, Position pos, float opacity);
+void SetRenderData(RenderData* dst, int resourceID, Position pos, float opacity);
 
 #endif

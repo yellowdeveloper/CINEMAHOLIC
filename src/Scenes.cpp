@@ -1,18 +1,24 @@
 #include <windows.h>
 #include <d2d1.h>
+#include <dwrite.h>
 
 #include "structs.h"
 #include "ImgManager.hpp"
 #include "ObjectController.hpp"
 #include "InputManager.hpp"
 #include "Scenes.hpp"
+#include "TextManager.hpp"
 
 // custom_scripts to add events
 #include "custom_scripts/sceneChangeButtonEvent.hpp"
 #include "custom_scripts/player.hpp"
 
 void MiniGameScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
+    int resourceID = 0;
+    D2D1_SIZE_U size;
+
     if (updateState == LOADING) {
+        JsonScriptParser((unsigned char *)"res/scripts/Scene1.json");
 
         *game_state = 4;
 
@@ -21,7 +27,7 @@ void MiniGameScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheA
 }
 
 void TycoonScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
-    int spriteID = 0;
+    int resourceID = 0;
     D2D1_SIZE_U size;
 
     if (updateState == LOADING) {
@@ -29,13 +35,13 @@ void TycoonScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr
         LoadAndCacheImg((unsigned char *)"dotMainCrStand.png", 4, &CacheArr[1]);
         // LoadAndCacheImg((unsigned char *)".png", 4, &CacheArr[2]);
 
-        spriteID = 0;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
+        resourceID = 0;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
 
-        spriteID = 1;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], spriteID, {605.0f, 286.5f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 1;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[1], resourceID, {605.0f, 286.5f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[1].scriptData = new playerData{
             0.005f
         };
@@ -48,7 +54,7 @@ void TycoonScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr
 }
 
 void NovelScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
-    int spriteID = 0;
+    int resourceID = 0;
     D2D1_SIZE_U size;
 
     if (updateState == LOADING) {
@@ -56,17 +62,17 @@ void NovelScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr)
         LoadAndCacheImg((unsigned char *)"character1_standing.png", 4, &CacheArr[1]);
         LoadAndCacheImg((unsigned char *)"bottom_panel.png", 4, &CacheArr[2]);
 
-        spriteID = 0;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
+        resourceID = 0;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
         
-        spriteID = 1;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], spriteID, {0.0f, 223.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 1;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[1], resourceID, {0.0f, 223.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
 
-        spriteID = 2;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[2], spriteID, {150.0f, 375.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 2;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[2], resourceID, {150.0f, 375.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
 
         *game_state = 3;
 
@@ -75,7 +81,7 @@ void NovelScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr)
 }
 
 void TestScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
-    int spriteID = 0;
+    int resourceID = 0;
     D2D1_SIZE_U size;
 
     if (updateState == LOADING) {    
@@ -84,29 +90,29 @@ void TestScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) 
         LoadAndCacheImg((unsigned char *)"tycoonBtn.png", 4, &CacheArr[2]);
         LoadAndCacheImg((unsigned char *)"miniGameBtn.png", 4, &CacheArr[3]);
 
-        spriteID = 0;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 0;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         
-        spriteID = 1;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], spriteID, {586.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 1;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[1], resourceID, {586.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[1].scriptData = new sceneChangeButtonData{
             NovelScene
         };
         ComponentsArr[1].OnClickFunc = SceneButtonEvents;
 
-        spriteID = 2;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[2], spriteID, {576.0f, 500.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 2;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[2], resourceID, {576.0f, 500.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[2].scriptData = new sceneChangeButtonData{
             TycoonScene
         };
         ComponentsArr[2].OnClickFunc = SceneButtonEvents;
 
-        spriteID = 3;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[3], spriteID, {543.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 3;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[3], resourceID, {543.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[3].scriptData = new sceneChangeButtonData{
             MiniGameScene
         };
@@ -121,7 +127,7 @@ void TestScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) 
 // Title Screen : Scene number 0 ~ 1
 void LoadTitle(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     D2D1_SIZE_U size;
-    int spriteID = 0;
+    int resourceID = 0;
 
     if (!(*game_state)) {
         Sprite productionPage;
@@ -144,21 +150,21 @@ void LoadTitle(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) 
         LoadAndCacheImg((unsigned char *)"gameLoadBtn.png", 4, &CacheArr[2]);
 
         // Set Components in the Scene
-        spriteID = 0;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], spriteID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 0;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
 
-        spriteID = 1;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], spriteID, {530.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 1;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[1], resourceID, {530.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[1].scriptData = new sceneChangeButtonData{
             TestScene
         };
         ComponentsArr[1].OnClickFunc = SceneButtonEvents;
 
-        spriteID = 2;
-        size = CacheArr[spriteID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[2], spriteID, {530.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        resourceID = 2;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[2], resourceID, {530.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[2].scriptData = new sceneChangeButtonData{
             TestScene
         };

@@ -36,14 +36,29 @@ struct Sprite {
     } 
 };
 
+struct textUpdateRequest {
+    int id;
+    unsigned char* text;
+};
+
+/// @brief 렌더링 타입 구조체
+/// @note 이미지(Sprite = 0), 텍스트(Text = 1) 구분
+enum struct RenderType {
+    Sprite,
+    Text
+};
+
 /// @brief 렌더링 정보 구조체
 /// @note 멤버 변수들의 특성은 컴포넌트 데이터 참고
 struct RenderData {
-    int spriteID;
+    bool enabled;
+
+    RenderType renderType;
+
+    int resourceID;
+
     Position position;
     float opacity;
-    
-    bool enabled;
 };
 
 #define MAX_MOUSE_EVENT 5
@@ -58,7 +73,7 @@ struct ComponentData {
     int componentType;
 
     ///< 캐싱된 이미지 배열과 매핑할 ID (캐시 배열의 인덱스)
-    int spriteID;
+    int resourceID;
 
     ///< 렌더 스냅샷(RenderData)에 업데이트 할 위치 정보
     Position position;
@@ -98,5 +113,12 @@ typedef struct RenderContext {
 };
 
 typedef void (*SceneFunc)(int*, ComponentData*, Sprite*);
+
+struct DialogInfo {
+    int id;
+    int imgID;
+
+    unsigned char* dialog;
+};
 
 #endif /* CommonStructs_H end */

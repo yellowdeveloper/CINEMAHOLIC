@@ -8,6 +8,7 @@
 // directx
 #include <d2d1.h>
 #include <d2d1helper.h>
+#include <dwrite.h>
 // C++ lib
 #include <thread>
 // incl
@@ -17,6 +18,7 @@
 #include "InputManager.hpp"
 #include "Scenes.hpp"
 #include "AudioManager.hpp"
+#include "TextManager.hpp"
 
 #define MAX_COMPONENT_NUM 1024
 #define MAX_FPS 60

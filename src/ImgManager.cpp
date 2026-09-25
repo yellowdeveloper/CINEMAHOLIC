@@ -79,7 +79,7 @@ void RenderAllComponents(RenderData* srcArr, Sprite* srcSpriteArr, int objectCou
             srcArr[i].position.y + srcArr[i].position.height
         ); 
 
-        renderTarget->DrawBitmap(srcSpriteArr[srcArr[i].spriteID].ImgCache, rect, srcArr[i].opacity);
+        renderTarget->DrawBitmap(srcSpriteArr[srcArr[i].resourceID].ImgCache, rect, srcArr[i].opacity);
     }
 
     renderTarget->EndDraw();
@@ -189,16 +189,30 @@ void MatchRenderData(RenderData* dst, ComponentData* src) {
     if (src->enabled) dst->enabled = true;
     else dst->enabled = false;
 
-    dst->spriteID = src->spriteID;
+    dst->resourceID = src->resourceID;
     dst->position = src->position;
     dst->opacity = src->opacity;
 }
 
-void SetRenderData(RenderData* dst, int spriteID, Position pos, float opacity) {
+void SetRenderData(RenderData* dst, int resourceID, Position pos, float opacity) {
     dst->enabled = true;
 
-    dst->spriteID = spriteID;
+    dst->resourceID = resourceID;
     dst->position = pos;
     dst->opacity = opacity;
 }
 // TODO: implement preloaded image que (circular)
+
+ID2D1Bitmap* GetRenderedText() { // get font, size, color, text
+    ID2D1Bitmap* bitmap = nullptr;
+
+    renderTarget->DrawText(
+        L"Hello, World!",
+        13,
+        nullptr, // IDWriteTextFormat* pTextFormat
+        D2D1::RectF(0, 0, 200, 50),
+        nullptr // ID2D1Brush* pForegroundBrush
+    );
+
+    return bitmap;
+}

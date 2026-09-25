@@ -1,0 +1,44 @@
+{
+  "scene_id": "Scene1",
+  "description": "예시 작성용 더미 스크립트",
+  "resources": [
+    {
+        "imgs": {
+          "1": "character1_standing.png",
+          "2": "dotMainCrStand.png"
+        },
+        "sounds": {
+
+        }
+    }
+  ],
+  "scripts": [
+    {
+      "id": 1,
+      "speaker": "main1",
+      "face": {
+        "index": 1
+      },
+      "text": "드디어 모험이 시작되는구나!\\n준비는 됐어, npc1?",
+      "audio": {
+        "se": "Decision1",
+        "volume": 90
+      },
+      "effect": null
+    },
+    {
+      "id": 2,
+      "speaker": "npc1",
+      "face": {
+        "index": 2
+      },
+      "text": "글쎄... main1 네가 또 길을 잃지\\n않는다면 말이지.",
+      "audio": null,
+      "effect": {
+        "type": "flash",
+        "target": "screen",
+        "duration": 30
+      }
+    }
+  ]
+}
