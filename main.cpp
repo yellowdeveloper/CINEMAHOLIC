@@ -24,14 +24,8 @@
 #define MAX_FPS 60
 #define FRAME_TIME float(1000.0f / MAX_FPS)
 
-// 0: init
-// 1: title
-// 2: game - tycoon
-// 3: game - visual novel
-// 4: game - minigame
-// 5: game - ending
-// 6: shut down
-int game_state = 0;
+// State Management (Game State)
+GameState game_state = INIT;
 
 InputEv inputEV;
 

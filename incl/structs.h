@@ -101,6 +101,20 @@ typedef enum UpdateState {
 };
 
 /**
+ * @brief 게임 상태 열거형
+ * @note 타이틀, 타이쿤, 미니게임 등 게임 상태 관리용 
+ */
+typedef enum GameState {
+    INIT,
+    TITLE,
+    TYCOON,
+    NOVEL,
+    MINIGAME,
+    ENDING,
+    SHUTDOWN
+};
+
+/**
  * @brief 렌더 버퍼 관리용
  * @note 레이스 컨디션 방지 및 스레드 동기화를 위해 사용
  */
@@ -112,7 +126,7 @@ typedef struct RenderContext {
     std::mutex lock;
 };
 
-typedef void (*SceneFunc)(int*, ComponentData*, Sprite*);
+typedef void (*SceneFunc)(GameState*, ComponentData*, Sprite*);
 
 struct DialogInfo {
     int id;

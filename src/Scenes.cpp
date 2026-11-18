@@ -13,20 +13,20 @@
 #include "custom_scripts/sceneChangeButtonEvent.hpp"
 #include "custom_scripts/player.hpp"
 
-void MiniGameScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
+void MiniGameScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     int resourceID = 0;
     D2D1_SIZE_U size;
 
     if (updateState == LOADING) {
         JsonScriptParser((unsigned char *)"res/scripts/Scene1.json");
 
-        *game_state = 4;
+        *game_state = MINIGAME;
 
         updateState = PROCESSING;
     }
 }
 
-void TycoonScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
+void TycoonScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     int resourceID = 0;
     D2D1_SIZE_U size;
 
@@ -47,13 +47,13 @@ void TycoonScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr
         };
         ComponentsArr[1].UpdateFunc = playerMove;
 
-        *game_state = 2;
+        *game_state = TYCOON;
 
         updateState = PROCESSING;
     }
 }
 
-void NovelScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
+void NovelScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     int resourceID = 0;
     D2D1_SIZE_U size;
 
@@ -74,13 +74,13 @@ void NovelScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr)
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[2], resourceID, {150.0f, 375.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
 
-        *game_state = 3;
+        *game_state = NOVEL;
 
         updateState = PROCESSING;
     }
 }
 
-void TestScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
+void TestScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     int resourceID = 0;
     D2D1_SIZE_U size;
 
@@ -118,14 +118,14 @@ void TestScene(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) 
         };
         ComponentsArr[3].OnClickFunc = SceneButtonEvents;
 
-        *game_state = 3;
+        *game_state = NOVEL;
 
         updateState = PROCESSING;        
     }
 }
 
 // Title Screen : Scene number 0 ~ 1
-void LoadTitle(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
+void LoadTitle(GameState *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) {
     D2D1_SIZE_U size;
     int resourceID = 0;
 
@@ -180,11 +180,11 @@ void LoadTitle(int *game_state, ComponentData* ComponentsArr, Sprite* CacheArr) 
         
         productionPage.Release();
         
-        *game_state = 1;
+        *game_state = TITLE;
     }
 }
 
-void LoadingScene(SceneFunc *scene, int *game_state, ComponentData *ComponentsArr, Sprite *CacheArr) {
+void LoadingScene(SceneFunc *scene, GameState *game_state, ComponentData *ComponentsArr, Sprite *CacheArr) {
     if (updateState == LOADING) {
         for (int i = 0; i < 3; i++) {
             RenderLoadingAnimation(D2D1::ColorF(D2D1::ColorF::Black), i);

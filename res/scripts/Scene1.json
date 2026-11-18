@@ -14,19 +14,19 @@
   ],
   "scripts": [
     {
-      "id": 1,
+      "id": "1",
       "speaker": "main1",
-      "face": 1,
+      "face": "1",
       "text": "드디어 모험이 시작되는구나!\\n준비는 됐어, npc1?",
       "audio": "Decision1",
-      "effect": null
+      "effect": "None"
     },
     {
-      "id": 2,
+      "id": "2",
       "speaker": "npc1",
-      "face": 2,
+      "face": "2",
       "text": "글쎄... main1 네가 또 길을 잃지\\n않는다면 말이지.",
-      "audio": null,
+      "audio": "None",
       "effect":"flash"
     }
   ]
