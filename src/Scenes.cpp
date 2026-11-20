@@ -20,6 +20,12 @@ void MiniGameScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* 
     if (updateState == LOADING) {
         JsonScriptParser((unsigned char *)"res/scripts/Scene1.json");
 
+        CacheArr[0].ImgCache = GetRenderedText(L"Hello World", L"Arial", 24.0f, D2D1::ColorF::White);
+
+        resourceID = 0;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+
         *game_state = MINIGAME;
 
         updateState = PROCESSING;
@@ -84,11 +90,11 @@ void TestScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* Cach
     int resourceID = 0;
     D2D1_SIZE_U size;
 
-    if (updateState == LOADING) {    
+    if (updateState == LOADING) {
         LoadAndCacheImg((unsigned char *)"title.png", 4, &CacheArr[0]);
-        LoadAndCacheImg((unsigned char *)"novelBtn.png", 4, &CacheArr[1]);
-        LoadAndCacheImg((unsigned char *)"tycoonBtn.png", 4, &CacheArr[2]);
-        LoadAndCacheImg((unsigned char *)"miniGameBtn.png", 4, &CacheArr[3]);
+        CacheArr[1].ImgCache = GetRenderedText(L"Novel", L"Arial", 24.0f, D2D1::ColorF::Black);
+        CacheArr[2].ImgCache = GetRenderedText(L"Tycoon", L"Arial", 24.0f, D2D1::ColorF::Black);
+        CacheArr[3].ImgCache = GetRenderedText(L"Mini Game", L"Arial", 24.0f, D2D1::ColorF::Black);
 
         resourceID = 0;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
@@ -146,8 +152,8 @@ void LoadTitle(GameState *game_state, ComponentData* ComponentsArr, Sprite* Cach
 
         // Load Cache Images for this Scene
         LoadAndCacheImg((unsigned char *)"title.png", 4, &CacheArr[0]);
-        LoadAndCacheImg((unsigned char *)"gameStartBtn.png", 4, &CacheArr[1]);
-        LoadAndCacheImg((unsigned char *)"gameLoadBtn.png", 4, &CacheArr[2]);
+        CacheArr[1].ImgCache = GetRenderedText(L"Start", L"Arial", 24.0f, D2D1::ColorF::Black);
+        CacheArr[2].ImgCache = GetRenderedText(L"Load", L"Arial", 24.0f, D2D1::ColorF::Black);
 
         // Set Components in the Scene
         resourceID = 0;

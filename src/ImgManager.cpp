@@ -1,16 +1,19 @@
 #include <stdio.h>
 #include <string.h>
+#include <wchar.h>
 
 #include <windows.h>
 
 #include <d2d1.h>
 #include <d2d1helper.h>
+#include <dwrite.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 
 #include "structs.h"
 #include "stb_image.h"
 #include "ImgManager.hpp"
+#include "TextManager.hpp"
 
 char resPath[MAX_PATH_LEN];
 
@@ -203,16 +206,54 @@ void SetRenderData(RenderData* dst, int resourceID, Position pos, float opacity)
 }
 // TODO: implement preloaded image que (circular)
 
-ID2D1Bitmap* GetRenderedText() { // get font, size, color, text
+ID2D1Bitmap* GetRenderedText(wchar_t* text, wchar_t* font_name, float font_size, D2D1::ColorF color) {
+    constexpr float textWidth = 200.0f;
+    constexpr float textHeight = 50.0f;
+
+    ID2D1BitmapRenderTarget* textTarget = nullptr;
+    ID2D1SolidColorBrush* textBrush = nullptr;
     ID2D1Bitmap* bitmap = nullptr;
+    IDWriteTextFormat* textFormat = nullptr;
 
-    renderTarget->DrawText(
-        L"Hello, World!",
-        13,
-        nullptr, // IDWriteTextFormat* pTextFormat
-        D2D1::RectF(0, 0, 200, 50),
-        nullptr // ID2D1Brush* pForegroundBrush
+    HRESULT hr = renderTarget->CreateCompatibleRenderTarget(
+        D2D1::SizeF(textWidth, textHeight),
+        &textTarget
     );
+    if (FAILED(hr)) return nullptr;
 
+    hr = SetTextFormat(&textFormat, font_name, font_size);
+
+    if (SUCCEEDED(hr)) {
+        hr = textTarget->CreateSolidColorBrush(
+            D2D1::ColorF(color),
+            &textBrush
+        );
+    }
+
+    if (SUCCEEDED(hr)) {
+        textTarget->BeginDraw();
+        textTarget->Clear(D2D1::ColorF(0.0f, 222.0f, 0.0f, 0.0f));
+        textTarget->DrawText(
+            text,
+            static_cast<UINT32>(wcslen(text)),
+            textFormat,
+            D2D1::RectF(0.0f, 0.0f, textWidth, textHeight),
+            textBrush
+        );
+        hr = textTarget->EndDraw();
+    }
+
+    if (SUCCEEDED(hr)) {
+        hr = textTarget->GetBitmap(&bitmap);
+    }
+
+    if (textBrush) textBrush->Release();
+    if (textFormat) textFormat->Release();
+    textTarget->Release();
+
+    if (FAILED(hr) && bitmap) {
+        bitmap->Release();
+        bitmap = nullptr;
+    }
     return bitmap;
 }

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
+#include <wchar.h>
 // win api
 #include <windows.h>
 // directx
@@ -167,7 +168,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
 
     GetClientRect(hwnd, &rc);
     D2D1_SIZE_U size = D2D1::SizeU(rc.right - rc.left, rc.bottom - rc.top);
-    D2DFactoryInit(hwnd, size);    
+    D2DFactoryInit(hwnd, size);
+    InitWriteFactoryFormat(); 
 
     // Show Production Logo And Change State to title
 
