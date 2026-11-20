@@ -23,5 +23,6 @@ void RenderSingleSprite(Sprite srcSprite, float x, float y, float opacity);
 ID2D1Bitmap* GetSolidSprite(UINT32 hexColor);
 void MatchRenderData(RenderData* dst, ComponentData* src);
 void SetRenderData(RenderData* dst, int resourceID, Position pos, float opacity);
+ID2D1Bitmap* GetRenderedText();
 
 #endif

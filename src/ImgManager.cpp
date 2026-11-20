@@ -5,6 +5,7 @@
 
 #include <d2d1.h>
 #include <d2d1helper.h>
+#include <dwrite.h>
 
 #define STB_IMAGE_IMPLEMENTATION
 
@@ -203,16 +204,71 @@ void SetRenderData(RenderData* dst, int resourceID, Position pos, float opacity)
 }
 // TODO: implement preloaded image que (circular)
 
-ID2D1Bitmap* GetRenderedText() { // get font, size, color, text
+ID2D1Bitmap* GetRenderedText() {
+    constexpr float textWidth = 200.0f;
+    constexpr float textHeight = 50.0f;
+
+    ID2D1BitmapRenderTarget* textTarget = nullptr;
+    IDWriteFactory* writeFactory = nullptr;
+    IDWriteTextFormat* textFormat = nullptr;
+    ID2D1SolidColorBrush* textBrush = nullptr;
     ID2D1Bitmap* bitmap = nullptr;
 
-    renderTarget->DrawText(
-        L"Hello, World!",
-        13,
-        nullptr, // IDWriteTextFormat* pTextFormat
-        D2D1::RectF(0, 0, 200, 50),
-        nullptr // ID2D1Brush* pForegroundBrush
+    HRESULT hr = renderTarget->CreateCompatibleRenderTarget(
+        D2D1::SizeF(textWidth, textHeight),
+        &textTarget
     );
+    if (FAILED(hr)) return nullptr;
 
+    hr = DWriteCreateFactory(
+        DWRITE_FACTORY_TYPE_SHARED,
+        __uuidof(IDWriteFactory),
+        reinterpret_cast<IUnknown**>(&writeFactory)
+    );
+    if (SUCCEEDED(hr)) {
+        hr = writeFactory->CreateTextFormat(
+            L"Arial",
+            nullptr,
+            DWRITE_FONT_WEIGHT_NORMAL,
+            DWRITE_FONT_STYLE_NORMAL,
+            DWRITE_FONT_STRETCH_NORMAL,
+            24.0f,
+            L"ko-kr",
+            &textFormat
+        );
+    }
+    if (SUCCEEDED(hr)) {
+        hr = textTarget->CreateSolidColorBrush(
+            D2D1::ColorF(D2D1::ColorF::White),
+            &textBrush
+        );
+    }
+
+    if (SUCCEEDED(hr)) {
+        textTarget->BeginDraw();
+        textTarget->Clear(D2D1::ColorF(0.0f, 0.0f, 0.0f, 0.0f));
+        textTarget->DrawText(
+            L"Hello, World!",
+            ARRAYSIZE(L"Hello, World!") - 1,
+            textFormat,
+            D2D1::RectF(0.0f, 0.0f, textWidth, textHeight),
+            textBrush
+        );
+        hr = textTarget->EndDraw();
+    }
+
+    if (SUCCEEDED(hr)) {
+        hr = textTarget->GetBitmap(&bitmap);
+    }
+
+    if (textBrush) textBrush->Release();
+    if (textFormat) textFormat->Release();
+    if (writeFactory) writeFactory->Release();
+    textTarget->Release();
+
+    if (FAILED(hr) && bitmap) {
+        bitmap->Release();
+        bitmap = nullptr;
+    }
     return bitmap;
 }

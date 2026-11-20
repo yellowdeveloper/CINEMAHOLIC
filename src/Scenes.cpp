@@ -20,6 +20,12 @@ void MiniGameScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* 
     if (updateState == LOADING) {
         JsonScriptParser((unsigned char *)"res/scripts/Scene1.json");
 
+        CacheArr[0].ImgCache = GetRenderedText();
+
+        resourceID = 0;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, size.width, size.height}, 1.0f, 1.0f);
+
         *game_state = MINIGAME;
 
         updateState = PROCESSING;
