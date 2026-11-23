@@ -16,8 +16,9 @@
 #include "TextManager.hpp"
 
 char resPath[MAX_PATH_LEN];
+unsigned char imgPath[MAX_PATH_LEN];
 
-// 릴리즈 필요 > 메모리 누수 (재활용 객체)
+// TODO::Release 없음 > 누수 관리 필요
 ID2D1HwndRenderTarget* renderTarget = nullptr;
 
 // 릴리즈 필요 > 메모리 누수 (재활용 객체)
@@ -49,7 +50,7 @@ void GetResourceDir() {
  * @param size 렌더링 대상 영역 크기
  * **/
 void D2DFactoryInit(HWND hwnd, D2D1_SIZE_U size) {
-    // 릴리즈 필요 > 메모리 누수 (재활용 객체)
+    // TODO::Release 없음 > 누수 관리 필요
     ID2D1Factory* D2DFactory = nullptr;
 
     D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &D2DFactory);
@@ -256,4 +257,18 @@ ID2D1Bitmap* GetRenderedText(wchar_t* text, wchar_t* font_name, float font_size,
         bitmap = nullptr;
     }
     return bitmap;
+}
+
+int CacheAllImgsFromBuffer(int chanel, int idx, Sprite* dst) {
+    int index = idx;
+    int ret = 0;
+
+    while(true) {
+        ret = GetImgPathFromBuffer(imgPath, ret);
+        if (ret == -1) break;
+        LoadAndCacheImg(imgPath, 4, dst + index);
+        index++;
+    }
+
+    return index;
 }

@@ -20,11 +20,26 @@ void MiniGameScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* 
     if (updateState == LOADING) {
         JsonScriptParser((unsigned char *)"res/scripts/Scene1.json");
 
-        CacheArr[0].ImgCache = GetRenderedText(L"Hello World", L"Arial", 24.0f, D2D1::ColorF::White);
+        CacheArr[0].ImgCache = GetSolidSprite(0xFFB0C9FF);
+        int Idx = 1;
+        Idx = CacheAllImgsFromBuffer(4, Idx, CacheArr);
+        CacheArr[Idx].ImgCache = GetRenderedText(L"Hello World", L"Arial", 24.0f, D2D1::ColorF::Black);
 
         resourceID = 0;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[0], resourceID, RenderType::Sprite, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
+
+        resourceID = 1;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[1], resourceID, RenderType::Sprite, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+
+        resourceID = 2;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[2], resourceID, RenderType::Sprite, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+
+        resourceID = 3;
+        size = CacheArr[resourceID].ImgCache->GetPixelSize();
+        SetComponentData(&ComponentsArr[3], resourceID, RenderType::Text, {605.0f, 286.5f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
 
         *game_state = MINIGAME;
 
@@ -43,11 +58,11 @@ void TycoonScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* Ca
 
         resourceID = 0;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[0], resourceID, RenderType::Sprite, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
 
         resourceID = 1;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], resourceID, {605.0f, 286.5f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[1], resourceID, RenderType::Sprite, {605.0f, 286.5f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[1].scriptData = new playerData{
             0.005f
         };
@@ -70,15 +85,15 @@ void NovelScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* Cac
 
         resourceID = 0;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[0], resourceID, RenderType::Sprite, {0.0f, 0.0f, SCREEN_HD_W, SCREEN_HD_H}, 1.0f, 1.0f);
         
         resourceID = 1;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], resourceID, {0.0f, 223.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[1], resourceID, RenderType::Sprite, {0.0f, 223.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
 
         resourceID = 2;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[2], resourceID, {150.0f, 375.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[2], resourceID, RenderType::Sprite, {150.0f, 375.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
 
         *game_state = NOVEL;
 
@@ -98,11 +113,11 @@ void TestScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* Cach
 
         resourceID = 0;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[0], resourceID, RenderType::Sprite, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         
         resourceID = 1;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], resourceID, {586.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[1], resourceID, RenderType::Text, {586.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[1].scriptData = new sceneChangeButtonData{
             NovelScene
         };
@@ -110,7 +125,7 @@ void TestScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* Cach
 
         resourceID = 2;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[2], resourceID, {576.0f, 500.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[2], resourceID, RenderType::Text, {576.0f, 500.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[2].scriptData = new sceneChangeButtonData{
             TycoonScene
         };
@@ -118,7 +133,7 @@ void TestScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* Cach
 
         resourceID = 3;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[3], resourceID, {543.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[3], resourceID, RenderType::Text, {543.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[3].scriptData = new sceneChangeButtonData{
             MiniGameScene
         };
@@ -158,11 +173,11 @@ void LoadTitle(GameState *game_state, ComponentData* ComponentsArr, Sprite* Cach
         // Set Components in the Scene
         resourceID = 0;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[0], resourceID, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[0], resourceID, RenderType::Sprite, {0.0f, 0.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
 
         resourceID = 1;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[1], resourceID, {530.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[1], resourceID, RenderType::Text, {530.0f, 440.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[1].scriptData = new sceneChangeButtonData{
             TestScene
         };
@@ -170,7 +185,7 @@ void LoadTitle(GameState *game_state, ComponentData* ComponentsArr, Sprite* Cach
 
         resourceID = 2;
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
-        SetComponentData(&ComponentsArr[2], resourceID, {530.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
+        SetComponentData(&ComponentsArr[2], resourceID, RenderType::Text, {530.0f, 560.0f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[2].scriptData = new sceneChangeButtonData{
             TestScene
         };

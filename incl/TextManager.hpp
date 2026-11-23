@@ -4,5 +4,6 @@
 void JsonScriptParser(unsigned char* jsonFilePath);
 HRESULT InitWriteFactoryFormat();
 HRESULT SetTextFormat(IDWriteTextFormat** textFormat, wchar_t* font_name, float font_size);
+int GetImgPathFromBuffer(unsigned char* imgPath, int start_offset);
 
 #endif

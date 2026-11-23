@@ -174,7 +174,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     // Show Production Logo And Change State to title
 
     // Run Game Logic Thread
-    std::thread update(UpdateThread, ComponentsArr, &renderContext, MAX_COMPONENT_NUM);
+    std::thread update(UpdateThread, ComponentsArr, &renderContext);
     // TODO: Run Asset Pre-Loadder Thread
 
     MSG msg = {0};
@@ -212,13 +212,22 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
             continue;
         }
 
+        deltaTime = 0.0f;
         QueryPerformanceCounter(&start);
 
         if (updateState == LOADING) {
-            ClearComponents(ComponentsArr, MAX_COMPONENT_NUM);
-            ClearCache(CacheArr, MAX_COMPONENT_NUM);
+            {
+                renderContext.lock.lock();
 
-            LoadingScene(&currentScene, &game_state, ComponentsArr, CacheArr);
+                ClearComponents(ComponentsArr, MAX_COMPONENT_NUM);
+                ClearCache(CacheArr, MAX_COMPONENT_NUM);
+
+                renderContext.renderCount = 0;
+                
+                LoadingScene(&currentScene, &game_state, ComponentsArr, CacheArr);
+
+                renderContext.lock.unlock();
+            }
 
             continue;
         }
@@ -226,7 +235,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
         if (currentScene)  {
             renderContext.lock.lock();
 
-            RenderData* tmpSwap = renderContext.renderBuffer;;
+            RenderData* tmpSwap = renderContext.renderBuffer;
             renderContext.renderBuffer = renderContext.updateBuffer;
             renderContext.updateBuffer = tmpSwap;
 

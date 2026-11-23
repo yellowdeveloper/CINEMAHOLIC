@@ -5,6 +5,7 @@
 #include "structs.h"
 #include "TextManager.hpp"
 
+// TODO::Release 없음 > 누수 관리 필요
 IDWriteFactory* writeFactory = nullptr;
 
 char imgs[1024];
@@ -73,6 +74,7 @@ void GetQuotedContents(char* src) {
             int dataLen = identifierEnd - identifierStart + 1;
             int writeOffset = strlen(imgs);
             memcpy(imgs + writeOffset, src + identifierStart, dataLen);
+            imgs[writeOffset+dataLen] = '|';
             continue;
         }
 
@@ -80,6 +82,7 @@ void GetQuotedContents(char* src) {
             int dataLen = identifierEnd - identifierStart + 1;
             int writeOffset = strlen(sounds);
             memcpy(sounds + writeOffset, src + identifierStart, dataLen);
+            sounds[writeOffset+dataLen] = '|';
             continue;
         }
 
@@ -87,6 +90,7 @@ void GetQuotedContents(char* src) {
             int dataLen = identifierEnd - identifierStart + 1;
             int writeOffset = strlen(scripts);
             memcpy(scripts + writeOffset, src + identifierStart, dataLen);
+            scripts[writeOffset+dataLen] = '|';
             continue;
         }
     }
@@ -112,15 +116,32 @@ void JsonScriptParser(unsigned char* jsonFilePath) {
     free(buffer);
 }
 
-void GetImgBuffer() {
+int GetImgPathFromBuffer(unsigned char* imgPath, int start_offset) {
+    int offset = 0;
 
+    if (imgs[start_offset] == '\0') return -1;
+
+    for (int i = 0; ;i++) {
+        if (imgs[start_offset + i] == '|') {
+            offset = start_offset + i + 1;
+            break;
+        }
+    }
+
+    int i = 0;
+    while(imgs[offset] != '|') {
+        imgPath[i++] = imgs[offset++];
+    }
+    imgPath[i] = '\0';
+    
+    return offset += 2;
 }
 
-void GetSoundBuffer() {
+void GetSoundPathFromBuffer() {
     
 }
 
-void GetScriptBuffer() {
+void GetScriptPathFromBuffer() {
     
 }
 

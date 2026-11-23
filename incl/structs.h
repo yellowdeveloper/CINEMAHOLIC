@@ -38,6 +38,7 @@ struct Sprite {
 
 struct textUpdateRequest {
     int id;
+    unsigned char* speaker;
     unsigned char* text;
 };
 
@@ -69,8 +70,8 @@ struct ComponentData {
     ///< 컴포넌트의 활성화 여부
     bool enabled;
 
-    // 정말 필요한가?
-    int componentType;
+    // 텍스트 / 스프라이트 구분 용 렌더 타입
+    RenderType renderType;
 
     ///< 캐싱된 이미지 배열과 매핑할 ID (캐시 배열의 인덱스)
     int resourceID;

@@ -10,9 +10,6 @@
 #define SCREEN_FHD_W 1920
 #define SCREEN_FHD_H 1080
 
-extern char resPath[MAX_PATH_LEN];
-extern ID2D1HwndRenderTarget* renderTarget;
-
 void GetResourceDir();
 void LoadAndCacheImg(unsigned char *file_name, int chanel, Sprite* dst);
 void D2DFactoryInit(HWND hwnd, D2D1_SIZE_U size);
@@ -24,5 +21,6 @@ ID2D1Bitmap* GetSolidSprite(UINT32 hexColor);
 void MatchRenderData(RenderData* dst, ComponentData* src);
 void SetRenderData(RenderData* dst, int resourceID, Position pos, float opacity);
 ID2D1Bitmap* GetRenderedText(wchar_t* text, wchar_t* font_name, float font_size, D2D1::ColorF color);
+int CacheAllImgsFromBuffer(int chanel, int idx, Sprite* dst);
 
 #endif
