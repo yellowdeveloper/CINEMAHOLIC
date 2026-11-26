@@ -21,7 +21,15 @@
 #include "AudioManager.hpp"
 #include "TextManager.hpp"
 
-#define MAX_COMPONENT_NUM 1024
+#ifndef QPC
+// build.bat overrides this globally: enabled for debug, disabled for release.
+#define QPC 0
+#endif
+
+#if QPC
+#include "QPC_MemBuf.hpp"
+#endif
+
 #define MAX_FPS 60
 #define FRAME_TIME float(1000.0f / MAX_FPS)
 
@@ -171,6 +179,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     D2DFactoryInit(hwnd, size);
     InitWriteFactoryFormat(); 
 
+#if QPC
+    QpcMemoryLogger(1000000);
+#endif
+
     // Show Production Logo And Change State to title
 
     // Run Game Logic Thread
@@ -216,32 +228,45 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
         QueryPerformanceCounter(&start);
 
         if (updateState == LOADING) {
-            {
-                renderContext.lock.lock();
+            renderContext.lock.lock();
 
-                ClearComponents(ComponentsArr, MAX_COMPONENT_NUM);
-                ClearCache(CacheArr, MAX_COMPONENT_NUM);
+            ClearComponents(ComponentsArr, MAX_COMPONENT_NUM);
+            ClearCache(CacheArr, MAX_COMPONENT_NUM);
 
-                renderContext.renderCount = 0;
-                
-                LoadingScene(&currentScene, &game_state, ComponentsArr, CacheArr);
+            renderContext.renderCount = 0;
 
-                renderContext.lock.unlock();
-            }
+            LoadingScene(&currentScene, &game_state, ComponentsArr, CacheArr);
+
+            renderContext.lock.unlock();
 
             continue;
         }
 
         if (currentScene)  {
+#if QPC
+            Record(QPC_RENDER_LOCK_REQUEST);
+#endif
             renderContext.lock.lock();
+#if QPC
+            Record(QPC_RENDER_LOCK_ACQUIRED);
+#endif
 
             RenderData* tmpSwap = renderContext.renderBuffer;
             renderContext.renderBuffer = renderContext.updateBuffer;
             renderContext.updateBuffer = tmpSwap;
 
-            renderContext.lock.unlock();
-
+#if QPC
+            Record(QPC_RENDER_START, d_time_sync);
+#endif
             RenderAllComponents(renderContext.renderBuffer, CacheArr, renderContext.renderCount);
+#if QPC
+            Record(QPC_RENDER_END, d_time_sync);
+#endif
+
+            renderContext.lock.unlock();
+#if QPC
+            Record(QPC_RENDER_LOCK_RELEASED);
+#endif
         }
     }
 
@@ -251,6 +276,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     if (update.joinable()) {
         update.join();
     }
+
+#if QPC
+    DumpQpcMemoryLogger();
+#endif
 
     return 0;
 }

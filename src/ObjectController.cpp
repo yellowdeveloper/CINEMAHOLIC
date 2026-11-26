@@ -1,6 +1,14 @@
 #include "structs.h"
 #include "ObjectController.hpp"
 
+#ifndef QPC
+#define QPC 0
+#endif
+
+#if QPC
+#include "QPC_MemBuf.hpp"
+#endif
+
 void ClearComponents(ComponentData* components, size_t max_compo) {
     for (size_t  i = 0; i < max_compo; i++) {
         if (components[i].enabled) {
@@ -30,19 +38,32 @@ void UpdateThread(ComponentData* components, RenderContext *rContext) {
 
         WaitForSingleObject(g_UpdateEvent, INFINITE);
 
+#if QPC
+        Record(QPC_UPDATE_LOCK_REQUEST);
+#endif
         rContext->lock.lock();
-        for (size_t  i = 0; components[i].enabled; i++) {
+#if QPC
+        Record(QPC_UPDATE_LOCK_ACQUIRED);
+#endif
+        for (size_t  i = 0; components[i].enabled && i < MAX_COMPONENT_NUM; i++) {
             rCount++;
 
             if (components[i].UpdateFunc) {
+#if QPC
+                const double updateDeltaTime = d_time_sync;
+                Record(QPC_UPDATE_FUNC_START, updateDeltaTime);
+                components[i].UpdateFunc(&components[i], (float)updateDeltaTime);
+                Record(QPC_UPDATE_FUNC_END, updateDeltaTime);
+#else
                 components[i].UpdateFunc(&components[i], d_time_sync);
+#endif
             }
 
             if (components[i].OnClickFunc) {
                 components[i].OnClickFunc(&components[i]);
             }
 
-            // 대사 변화 체크 (textUpdateRequest)
+            // TODO::대사 변화 체크 (textUpdateRequest)
 
             rContext->updateBuffer[i].enabled  = true;
             rContext->updateBuffer[i].renderType = components[i].renderType;
@@ -53,7 +74,14 @@ void UpdateThread(ComponentData* components, RenderContext *rContext) {
         }
         rContext->renderCount = rCount;
         rContext->lock.unlock();
+#if QPC
+        Record(QPC_UPDATE_LOCK_RELEASED);
 
+        Record(QPC_SLEEP_START);
+#endif
         Sleep(1);
+#if QPC
+        Record(QPC_SLEEP_END);
+#endif
     }
 }
