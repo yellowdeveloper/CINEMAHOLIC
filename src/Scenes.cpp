@@ -64,7 +64,7 @@ void TycoonScene(GameState *game_state, ComponentData* ComponentsArr, Sprite* Ca
         size = CacheArr[resourceID].ImgCache->GetPixelSize();
         SetComponentData(&ComponentsArr[1], resourceID, RenderType::Sprite, {605.0f, 286.5f, (float)size.width, (float)size.height}, 1.0f, 1.0f);
         ComponentsArr[1].scriptData = new playerData{
-            0.1f
+            1.0f
         };
         ComponentsArr[1].UpdateFunc = playerMove;
 

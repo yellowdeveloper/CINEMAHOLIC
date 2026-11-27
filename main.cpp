@@ -23,7 +23,7 @@
 
 #ifndef QPC
 // build.bat overrides this globally: enabled for debug, disabled for release.
-#define QPC 0
+#define QPC 1
 #endif
 
 #if QPC
@@ -67,6 +67,12 @@ Sprite CacheArr[MAX_COMPONENT_NUM];
 clock_t start = clock();
 double fps = 0.0f;
 double d_time_sync = 0.0f;
+
+std::mutex tickMutex;
+std::condition_variable tickCv;
+
+unsigned pendingTicks = 0;
+bool stopping = false;
 
 // Window Procedure : CALLBACK Function = Process Messages From OS
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -192,13 +198,15 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
     MSG msg = {0};
     boolean running = true;
 
-    LARGE_INTEGER frequency, start, end;
+    LARGE_INTEGER frequency, start, end, updateLast;
     double deltaTime = 0.0f;
+    double updateMs = 0.0;
 
     QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
     QueryPerformanceCounter(&start);
 
     currentScene(&game_state, ComponentsArr, CacheArr);
+    QueryPerformanceCounter(&updateLast);
 
     while(running) {
         // Main Thread Will Process Window, Image Render
@@ -216,18 +224,41 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pCmdLine,
             if (!running) break;
         }
 
-        if (deltaTime < FRAME_TIME) {
-            QueryPerformanceCounter(&end);
-            deltaTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart * 1000.0f;
-            d_time_sync = deltaTime;
-            fps = 1000.0f / d_time_sync;
-            continue;
+        QueryPerformanceCounter(&end);
+        deltaTime = (double)(end.QuadPart - start.QuadPart) / frequency.QuadPart * 1000.0f;
+        d_time_sync = deltaTime;
+
+        const double updateElapsedMs = (double)(end.QuadPart - updateLast.QuadPart) * 1000.0 / frequency.QuadPart;
+        updateLast = end;
+
+        if (updateState == PROCESSING) {
+            updateMs += updateElapsedMs;
+            unsigned ticksDue = 0;
+            while (updateMs >= UPDATE_TIME) {
+                updateMs -= UPDATE_TIME;
+                ++ticksDue;
+            }
+
+            if (ticksDue > 0) {
+                std::lock_guard<std::mutex> lock(tickMutex);
+                pendingTicks += ticksDue;
+                tickCv.notify_one();
+            }
+        } else {
+            updateMs = 0.0;
         }
 
+        if (deltaTime < FRAME_TIME) {
+            continue;
+        }
+        
+        fps = 1000.0f / d_time_sync;
         deltaTime = 0.0f;
         QueryPerformanceCounter(&start);
-
+         
         if (updateState == LOADING) {
+            ResetEvent(g_UpdateEvent);
+
             renderContext.lock.lock();
 
             ClearComponents(ComponentsArr, MAX_COMPONENT_NUM);

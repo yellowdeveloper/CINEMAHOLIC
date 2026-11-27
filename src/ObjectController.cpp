@@ -38,6 +38,15 @@ void UpdateThread(ComponentData* components, RenderContext *rContext) {
 
         WaitForSingleObject(g_UpdateEvent, INFINITE);
 
+        std::unique_lock<std::mutex> lock(tickMutex);
+        tickCv.wait(lock, [] { return stopping || pendingTicks > 0; });
+
+        if (stopping) break;
+        --pendingTicks;
+        lock.unlock();
+
+        const float updateDeltaTime = UPDATE_TIME;
+
 #if QPC
         Record(QPC_UPDATE_LOCK_REQUEST);
 #endif
@@ -50,12 +59,11 @@ void UpdateThread(ComponentData* components, RenderContext *rContext) {
 
             if (components[i].UpdateFunc) {
 #if QPC
-                const double updateDeltaTime = d_time_sync;
                 Record(QPC_UPDATE_FUNC_START, updateDeltaTime);
-                components[i].UpdateFunc(&components[i], (float)updateDeltaTime);
+                components[i].UpdateFunc(&components[i], updateDeltaTime);
                 Record(QPC_UPDATE_FUNC_END, updateDeltaTime);
 #else
-                components[i].UpdateFunc(&components[i], d_time_sync);
+                components[i].UpdateFunc(&components[i], updateDeltaTime);
 #endif
             }
 
@@ -79,7 +87,7 @@ void UpdateThread(ComponentData* components, RenderContext *rContext) {
 
         Record(QPC_SLEEP_START);
 #endif
-        Sleep(1);
+        // Sleep(1);
 #if QPC
         Record(QPC_SLEEP_END);
 #endif

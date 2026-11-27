@@ -19,7 +19,7 @@ if not exist build\debug mkdir build\debug
 
 cl /Zi /Od /c ^
     /DQPC=1 /I incl /I src/custom_scripts /I dev_tools /Fo"build\\debug\\" /Fd"build\\debug\\" ^
-    main.cpp src\*.cpp src\*.c src\custom_scripts\*.cpp src\custom_scripts\*.c
+    main.cpp src\*.cpp src\*.c src\custom_scripts\*.cpp src\custom_scripts\*.c dev_tools\QPC_MemBuf.cpp
 
 link build\debug\*.obj ^
     User32.lib Gdi32.lib d2d1.lib dwrite.lib ^

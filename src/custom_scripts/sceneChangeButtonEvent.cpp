@@ -51,7 +51,6 @@ void SceneButtonEvents(ComponentData* self) {
 
                 nextScene = targetScene;
                 updateState = LOADING;
-                ResetEvent(g_UpdateEvent);
             }
         }
         else {
